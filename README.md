@@ -722,7 +722,7 @@ Add annotation to the method `outbound` in `GreetResource.java` in the MP projec
 
 And create the fallback method:
 ```java
-public JsonObject onFailureOutbound(String name, SecurityContext context) {
+public JsonObject onFailureOutbound(String name) {
     return Json.createObjectBuilder().add("Failed", name).build();
 }
 ```

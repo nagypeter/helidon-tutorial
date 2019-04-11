@@ -38,7 +38,6 @@ import org.glassfish.jersey.server.Uri;
 import javax.ws.rs.client.WebTarget;
 
 import io.helidon.security.integration.jersey.SecureClient;
-import io.helidon.security.SecurityContext;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 
 /**
