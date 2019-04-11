@@ -276,7 +276,7 @@ Check your `GreetService` class:
 
 ![](tutorial/images/09.se.config.greetservice.png)
 
-Run the MP application using `Main.java` and check the result at: [http://localhost:8080/greet](http://localhost:8080/greet)
+Run the SE application using `Main.java` and check the result at: [http://localhost:8080/greet](http://localhost:8080/greet)
 ```bash
 curl http://localhost:8080/greet
 {"message":"Hello Helidon SE World!"}
