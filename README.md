@@ -6,7 +6,6 @@ On this hands on lab you will learn how to write Java microservices application 
 #### Prerequisites
 
 - Java 8+
-- Git
 - Maven 3.5+
 - Docker
 - Text editor or IDE to write and modify source code
