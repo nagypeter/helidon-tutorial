@@ -48,7 +48,7 @@ cd /u01/workspace
 mvn archetype:generate -DinteractiveMode=false \
     -DarchetypeGroupId=io.helidon.archetypes \
     -DarchetypeArtifactId=helidon-quickstart-se \
-    -DarchetypeVersion=1.1.2 \
+    -DarchetypeVersion=1.0.0 \
     -DgroupId=io.helidon.examples \
     -DartifactId=conference-se \
     -Dpackage=io.helidon.examples.conference.se
@@ -59,7 +59,7 @@ mvn archetype:generate -DinteractiveMode=false \
 mvn archetype:generate -DinteractiveMode=false \
     -DarchetypeGroupId=io.helidon.archetypes \
     -DarchetypeArtifactId=helidon-quickstart-mp \
-    -DarchetypeVersion=1.1.2 \
+    -DarchetypeVersion=1.0.0 \
     -DgroupId=io.helidon.examples \
     -DartifactId=conference-mp \
     -Dpackage=io.helidon.examples.conference.mp
