@@ -841,10 +841,10 @@ docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/co
 ```
 Where:
 
-- **<region-code>** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
+- **REGION-CODE** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
 - **ocir.io** is the Oracle Cloud Infrastructure Registry name.
-- **<tenancy-name>** is the name of the tenancy.
-- **<repo-name>** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a <repo-name>. Otherwise choose a friendly name for example, *helidon01*.
+- **TENANCY-NAME** is the name of the tenancy.
+- **REPO-NAME** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a repository name. Otherwise choose a friendly name for example, *helidon01*.
 
 For example:
 ```bash
@@ -852,7 +852,7 @@ docker tag conference-se:1.0 iad.ocir.io/weblogick8s/conference-se:1.0
 ```
 Review the list of available images by entering:
 ```bash
-docker images
+$ docker images
 conference-se                                              1.0                                        842ca67fe519        34 minutes ago      210MB
 iad.ocir.io/weblogick8s/conference-se                      1.0                                        842ca67fe519        34 minutes ago      210MB
 ```
@@ -864,7 +864,7 @@ Where <region-code> is the code for the Oracle Cloud Infrastructure Registry reg
 
 When prompted, enter your username in the format `<tenancy>/<username>`. For example, `weblogick8s/jdoe@acme.com`. When password is prompted, enter the auth token you copied earlier as the password.
 ```bash
-docker login iad.ocir.io
+$ docker login iad.ocir.io
 Username: weblogick8s/jdoe@acme.com
 Password:
 Login Succeeded
@@ -876,7 +876,7 @@ docker push <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/conference-se:1.0
 ```
 For example:
 ```bash
-conference-se (config.pnagy.cluster1)$ docker push iad.ocir.io/weblogick8s/conference-se:1.0
+$ docker push iad.ocir.io/weblogick8s/conference-se:1.0
 The push refers to repository [iad.ocir.io/weblogick8s/conference-se]
 6b8227c1376a: Pushed
 4fb14fbcbea1: Pushed
