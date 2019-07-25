@@ -786,4 +786,203 @@ Save the changes and restart the SE application. Open http://localhost:8080/inde
 
 ![](tutorial/images/27.static.result.png)
 
+### Step 12: Deploy to Kubernetes (OKE)
+
+This step is optional if you have OCI access and available OKE instance.
+
+You can also apply the step to any other Kubernetes environment.
+
+#### 12.1 Build the application Docker image
+
+Use again the terminal to build the Helidon SE application Docker image. Make sure you are in the Helidon SE project folder:
+```bash
+cd /u01/workspace/conference-se
+```
+First build the project again. You need to skip the tests during the build because you did modify the application but didn't adjusted the test cases:
+```bash
+mvn package -DskipTests
+```
+Create the Docker image. The `Dockerfile` generated and available in the project's root folder:
+```bash
+docker build -t conference-se:1.0 .
+```
+Test the container on your desktop:
+```bash
+docker run --rm -p 8080:8080 conference-se:1.0
+```
+You can check either using `curl http://localhost:8080/greet` command or opening the http://localhost:8080/index.html in a browser.
+
+Stop the running docker container in the terminal using `Ctrl+C`.
+
+#### 12.2 Get an Auth Token
+
+In a browser, go to the url you've been given to log in to Oracle Cloud Infrastructure. Specify tenancy, username and password and sign in.
+![](tutorial/images/30.oci-login-page.png)
+
+In the top-right corner of the Console, open the **User menu**, and then click **User Settings**.
+![](tutorial/images/31.oci-console-settings.png)
+
+On the **Auth Tokens** page, click **Generate Token**.
+![](tutorial/images/32.oci-auth-tokens.png)
+
+Enter *Tutorial auth token* as a friendly description for the auth token and click **Generate Token**. The new auth token is displayed. Copy the auth token immediately(!) to a secure location from where you can retrieve it later, because you won't see the auth token again in the Console.
+Close the Generate Token dialog.
+
+Confirm that you can access Oracle Cloud Infrastructure Registry.
+
+In the Console, open the navigation menu. Under **Solutions, Platform and Edge**, go to **Developer Services** and click **Registry**. Choose the region in which you will be working (for example, *us-phoenix-1*). Review the repositories that already exist. This tutorial assumes that no repositories have been created yet.
+![](tutorial/images/33.oci-registry-no-images.png)
+
+#### 12.3 Push the Docker image to the registry
+
+For the push you have to create a new image tag which reflects your repository.
+```bash
+docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/conference-se:1.0
+```
+Where:
+
+- **<region-code>** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
+- **ocir.io** is the Oracle Cloud Infrastructure Registry name.
+- **<tenancy-name>** is the name of the tenancy.
+- **<repo-name>** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a <repo-name>. Otherwise choose a friendly name for example, *helidon01*.
+
+For example:
+```bash
+docker tag conference-se:1.0 iad.ocir.io/weblogick8s/conference-se:1.0
+```
+Review the list of available images by entering:
+```bash
+docker images
+conference-se                                              1.0                                        842ca67fe519        34 minutes ago      210MB
+iad.ocir.io/weblogick8s/conference-se                      1.0                                        842ca67fe519        34 minutes ago      210MB
+```
+To push to the registry you need to log in to Oracle Cloud Infrastructure Registry by entering:
+```bash
+docker login <region-code>.ocir.io
+```
+Where <region-code> is the code for the Oracle Cloud Infrastructure Registry region you're using. See above.
+
+When prompted, enter your username in the format `<tenancy>/<username>`. For example, `weblogick8s/jdoe@acme.com`. When password is prompted, enter the auth token you copied earlier as the password.
+```bash
+docker login iad.ocir.io
+Username: weblogick8s/jdoe@acme.com
+Password:
+Login Succeeded
+```
+
+As a last step to complete upload to registry, push the Docker image from the client machine to Oracle Cloud Infrastructure Registry by entering:
+```bash
+docker push <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/conference-se:1.0
+```
+For example:
+```bash
+conference-se (config.pnagy.cluster1)$ docker push iad.ocir.io/weblogick8s/conference-se:1.0
+The push refers to repository [iad.ocir.io/weblogick8s/conference-se]
+6b8227c1376a: Pushed
+4fb14fbcbea1: Pushed
+0703bce10b9c: Pushed
+cb510ec240d0: Pushed
+47da6bcc94ab: Pushed
+9c7455d26d36: Pushed
+93df8ce6d131: Pushed
+5dacd731af1b: Pushed
+1.0: digest: sha256:e6b62e8eed990aa7fc45a5919c489445940699dba41d7e68856d8fe452d41d5a size: 1991
+```
+
+In the browser window showing the Console with the Registry page displayed, click Reload.
+![](tutorial/images/34.oci-registry-image-check.png)
+Click the name of the `conference-se` repository that contains the image you just pushed. You see:
+The different images in the repository. In this case, there is only one image, with the tag `1.0`.
+
+#### 12.4 Deploy to OKE (Oracle **Kubernetes** Engine)
+
+In order to use your Kubernetes cluster you have to configure `kubectl` the client tool on your desktop. To do so follow the [Downloading a kubeconfig File to Enable Cluster Access](https://docs.cloud.oracle.com/iaas/Content/ContEng/Tasks/contengdownloadkubeconfigfile.htm) documentation or [this tutorial](https://github.com/nagypeter/weblogic-operator-tutorial/blob/master/tutorials/setup.oke.md#prepare-oci-cli-to-download-kubernetes-configuration-file).
+
+Create a namespace (for example, *helidon*) for the project. (If you use shared Kubernetes cluster the instructor will assign a namespace):
+```bash
+$ kubectl create namespace helidon
+namespace/helidon created
+```
+The repository that you created previously is private. To allow Kubernetes to authenticate with the container registry and pull the private image, you must create and use an image-pull secret:
+```bash
+kubectl create secret docker-registry \
+    ocirsecret \
+    --docker-server=<region-code>.ocir.io \
+    --docker-username='<tenancy-name>/<oci-username>' \
+    --docker-password='<oci-auth-token>' \
+    --docker-email='<email-address>' \
+    --namespace helidon
+```
+For example:
+```bash
+$ kubectl create secret docker-registry \
+    ocirsecret \
+    --docker-server=iad.ocir.io \
+    --docker-username='weblogick8s/jdoe@acme.com' \
+    --docker-password='<oci-auth-token>' \
+    --docker-email='jdoe@acme.com' \
+    --namespace helidon
+secret/ocirsecret created
+```
+
+The project already contains a descriptor to deploy the application on Kubernetes. However it contains default image name what you have to modify before apply. Edit the `app.yaml` in the project root folder and add the following under `spec` in the `deployment` section. You have to add `imagePullSecrets` property and modify the `image` in the `container`. For example:
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: conference-se
+  labels:
+    app: conference-se
+spec:
+  type: NodePort
+  selector:
+    app: conference-se
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: conference-se
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: conference-se
+        version: v1
+    spec:
+      imagePullSecrets:
+      - name: ocirsecret
+      containers:
+      - name: conference-se
+        image: iad.ocir.io/weblogick8s/conference-se:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+---
+
+```
+Deploy the application:
+```bash
+kubectl create -f app.yaml -n helidon
+```
+Instead of setting up ingress for external access of the application simply use `kubectl` port forwarding to access to the application:
+```bash
+kubectl port-forward deployment/conference-se 7000:8080 -n helidon
+```
+In a different terminal window you can check the deployed application either using `curl http://localhost:7000/greet` command or opening the http://localhost:7000/index.html in a browser.
+
+![](tutorial/images/35.check-on-oke.png)
+
+Housekeeping. To delete Kubernetes deployment just delete the namespace:
+
+```bash
+$ kubectl delete namespace helidon
+namespace "helidon" deleted
+```
+
 Congratulate you completed Helidon SE and MP basics lab!
