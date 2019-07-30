@@ -786,6 +786,8 @@ Save the changes and restart the SE application. Open http://localhost:8080/inde
 
 ![](tutorial/images/27.static.result.png)
 
+After the application test stop all your running Helidon applications.
+
 ### Step 12: Deploy to Kubernetes (OKE)
 
 This step is optional if you have OCI access and available OKE instance.
@@ -837,14 +839,15 @@ In the Console, open the navigation menu. Under **Solutions, Platform and Edge**
 
 For the push you have to create a new image tag which reflects your repository.
 ```bash
-docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/conference-se:1.0
+docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>:<TAG>
 ```
 Where:
 
 - **REGION-CODE** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
 - **ocir.io** is the Oracle Cloud Infrastructure Registry name.
 - **TENANCY-NAME** is the name of the tenancy.
-- **REPO-NAME** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a repository name. Otherwise choose a friendly name for example, *helidon01*.
+- **REPO-NAME** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a repository name with unique number e.g. *conference-se01*. Otherwise choose a friendly name for example, *conference-se*.
+- **TAG**: version tag to identify the container packaged application.
 
 For example:
 ```bash
@@ -898,7 +901,7 @@ The different images in the repository. In this case, there is only one image, w
 
 In order to use your Kubernetes cluster you have to configure `kubectl` the client tool on your desktop. To do so follow the [Downloading a kubeconfig File to Enable Cluster Access](https://docs.cloud.oracle.com/iaas/Content/ContEng/Tasks/contengdownloadkubeconfigfile.htm) documentation or [this tutorial](https://github.com/nagypeter/weblogic-operator-tutorial/blob/master/tutorials/setup.oke.md#prepare-oci-cli-to-download-kubernetes-configuration-file).
 
-Create a namespace (for example, *helidon*) for the project. (If you use shared Kubernetes cluster the instructor will assign a namespace):
+Create a namespace (for example, *helidon*) for the project. (If you use shared Kubernetes cluster the instructor will assign a unique namespace e.g. *helidon01*):
 ```bash
 $ kubectl create namespace helidon
 namespace/helidon created
@@ -925,7 +928,7 @@ $ kubectl create secret docker-registry \
 secret/ocirsecret created
 ```
 
-The project already contains a descriptor to deploy the application on Kubernetes. However it contains default image name what you have to modify before apply. Edit the `app.yaml` in the project root folder and add the following under `spec` in the `deployment` section. You have to add `imagePullSecrets` property and modify the `image` in the `container`. For example:
+The project already contains a descriptor to deploy the application on Kubernetes. However it contains default image name what you have to modify before apply. Edit the `app.yaml` in the project root folder and add the following under `spec` in the `deployment` section. You have to add `imagePullSecrets` element including `- name: ocirsecret` value and also modify the `containers` element `image` property value to the image name created above. For example:
 
 ```yaml
 kind: Service
