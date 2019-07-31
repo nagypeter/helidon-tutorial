@@ -630,6 +630,12 @@ Add `WebTarget` to the `GreetResource` of the MP application:
 @SecureClient
 private WebTarget target;
 ```
+If the IDE can't offer the missing import packages then copy from here:
+```java
+import javax.ws.rs.client.WebTarget;
+import org.glassfish.jersey.server.Uri;
+import io.helidon.security.integration.jersey.SecureClient;
+```
 Add a new method that calls the SE service:
 ```java
 @GET
