@@ -547,6 +547,10 @@ For demo purposes just display the current timestamp in the health information. 
         .withData("timestamp", System.currentTimeMillis())
         .build())
 ```
+It requires the followin import to be add:
+```java
+import org.eclipse.microprofile.health.HealthCheckResponse;
+```
 The complete `HealthSupport` build part should look like this:
 ```java
 HealthSupport health = HealthSupport.builder()
