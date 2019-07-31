@@ -171,6 +171,7 @@ After using the default config file now customise the configuration on both proj
 
 First for MP project create an external `dev-conference-mp.yaml` config file to `/u01/conf`.
 ```bash
+mkdir -p /u01/conf
 vi /u01/conf/dev-conference-mp.yaml
 ```
 Insert the following content and save:
