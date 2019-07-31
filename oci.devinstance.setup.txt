@@ -1,0 +1,82 @@
+# install maven
+sudo yum -y install maven
+
+echo "========================================"
+
+BASHRC_FILE=/home/opc/.bashrc
+
+grepresult=$(grep -c "alias json_pp='python -mjson.tool'" $BASHRC_FILE -s)
+
+if [ $grepresult == 1 ]
+then
+    # bashrc configured for json_pp
+    echo "~/.bashrc is already configured for json_pp."
+else
+    # bashrc not configured for json_pp, need to add
+    sudo echo "alias json_pp='python -mjson.tool'" >> $BASHRC_FILE
+    echo "~/.bashrc now has been configured for json_pp."
+fi
+
+echo "========================================"
+
+
+# install eclipse
+
+cd /home/opc
+wget http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-06/R/eclipse-java-2019-06-R-linux-gtk-x86_64.tar.gz
+
+rm -rf /home/opc/eclipse
+
+tar -zxvf eclipse-java-2019-06-R-linux-gtk-x86_64.tar.gz -C /home/opc
+
+sudo ln -sf /home/opc/eclipse /usr/bin/eclipse
+
+cat > ~/Desktop/eclipse.desktop <<EOF
+[Desktop Entry]
+Comment[en_US]=Eclipse IDE
+Comment=Eclipse IDE
+Exec=/usr/bin/eclipse/eclipse
+GenericName[en_US]=Eclipse
+GenericName=Eclipse
+Icon=/usr/bin/eclipse/icon.xpm
+MimeType=
+Name[en_US]=Eclipse
+Name=Eclipse
+Path=/tmp/
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+EOF
+
+chmod +x ~/Desktop/eclipse.desktop
+
+
+# set firewall
+sudo firewall-cmd --permanent --zone=public --add-port=5901/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=8081/tcp
+sudo firewall-cmd --permanent --zone=public --add-port=9411/tcp
+sudo firewall-cmd --reload
+
+# install kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
+chmod +x ./kubectlmvn archetype:generate -DinteractiveMode=false \
+    -DarchetypeGroupId=io.helidon.archetypes \
+    -DarchetypeArtifactId=helidon-quickstart-se \
+    -DarchetypeVersion=1.0.0 \
+    -DgroupId=io.helidon.examples \
+    -DartifactId=conference-se \
+    -Dpackage=io.helidon.examples.conference.se
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+# FOR Docker
+(sudo usermod -a -G docker $USER)
+sudo usermod -a -G docker opc
+
+# start vncserver
+vncserver -kill :1
+vncpasswd
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+vncserver
