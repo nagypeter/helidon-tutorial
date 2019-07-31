@@ -265,6 +265,10 @@ Open the class and add new member to store the value:
 ```java
 private final Supplier<String> greetingSupplier;
 ```
+It requires `Supplier` import too, so add the following import to the import section at the top of the class:
+```java
+import java.util.function.Supplier;
+```
 Modify the constructor `GreetService` method to set supplier instead of the `greeting` member.
 ```java
 greetingSupplier = config.get("app.greeting").asString().supplier("Ciao");
