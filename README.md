@@ -397,6 +397,9 @@ A health check is a Java functional interface that returns a  `HealthCheckRespon
 For MP it works out of the box, check http://localhost:8081/health. Or using `curl`:
 ```bash
 curl -s http://localhost:8081/health/ | json_pp
+```
+The result should have similar:
+```bash
 {
    "checks" : [
       {
@@ -475,6 +478,9 @@ connection: keep-alive
 Check the health information again using the browser: http://localhost:8081/health/. Or you can use `curl` again. Find the your custom health data (*"greeting" : "Hello Helidon"*) in the response.
 ```bash
 curl -s http://localhost:8081/health/ | json_pp
+```
+The result should have similar:
+```bash
 {
    "checks" : [
       {
@@ -543,6 +549,9 @@ Save the changes. Stop the SE application (if necessary) and run again using `Ma
 Check the health information:
 ```bash
 curl -s http://localhost:8080/health/ | json_pp
+```
+The result should have similar:
+```bash
 {
 "checks" : [
    {
