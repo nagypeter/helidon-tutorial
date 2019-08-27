@@ -817,7 +817,57 @@ mvn archetype:generate -DinteractiveMode=false \
     -DartifactId=helidon-quickstart-se \
     -Dpackage=io.helidon.examples.quickstart.se
 ```
-Export the environment variable:
+To see the startup time modify the *io.helidon.examples.quickstart.se.Main* class. Open the `/u01/content/helidon-quickstart-se/src/main/java/io/helidon/examples/quickstart/se/Main.java` file for edit using `gedit` or `vi`:
+```bash
+gedit /u01/content/helidon-quickstart-se/src/main/java/io/helidon/examples/quickstart/se/Main.java &
+```
+Modify the *startServer* method. Add variable as a first step to store the start time:
+```java
+long start = System.nanoTime();
+```
+Change the `System.out` log entry parameters to include the startup time calculation:
+```java
+System.out.println("WEB server is up in " + (System.nanoTime() - start)/1000000 + " ms! http://localhost:" + ws.port() + "/greet");
+```
+The complete *startServer* method should look like the following:
+```java
+static WebServer startServer() throws IOException {
+
+	long start = System.nanoTime();
+  // load logging configuration
+  LogManager.getLogManager().readConfiguration(
+          Main.class.getResourceAsStream("/logging.properties"));
+
+  // By default this will pick up application.yaml from the classpath
+  Config config = Config.create();
+
+  // Get webserver config from the "server" section of application.yaml
+  ServerConfiguration serverConfig =
+          ServerConfiguration.create(config.get("server"));
+
+  WebServer server = WebServer.create(serverConfig, createRouting(config));
+
+  // Try to start the server. If successful, print some info and arrange to
+  // print a message at shutdown. If unsuccessful, print the exception.
+  server.start()
+      .thenAccept(ws -> {
+          System.out.println(
+                  "WEB server is up in " + (System.nanoTime() - start)/1000000 + " ms! http://localhost:" + ws.port() + "/greet");
+          ws.whenShutdown().thenRun(()
+              -> System.out.println("WEB server is DOWN. Good bye!"));
+          })
+      .exceptionally(t -> {
+          System.err.println("Startup failed: " + t.getMessage());
+          t.printStackTrace(System.err);
+          return null;
+      });
+
+  // Server threads are not daemon. No need to block. Just react.
+
+  return server;
+}
+```
+Close the editor and set the environment variable in the terminal for the build:
 ```bash
 export GRAALVM_HOME=/usr/lib/jvm/graalvm
 ```
