@@ -1,4 +1,4 @@
-![](tutorial/images/logo.png)
+  ![](tutorial/images/logo.png)
 # Helidon tutorial
 
 On this hands on lab you will learn how to write Java microservices application using [Helidon](https://helidon.io/#/). The tutorial covers both programming models: Helidon SE reactive and Helidon MicroProfile (MP) APIs.
@@ -10,24 +10,8 @@ On this hands on lab you will learn how to write Java microservices application 
 - Docker
 - Text editor or IDE to write and modify source code
 
-Alternative option: [download](https://drive.google.com/open?id=11CvOZ-j50-2q9-rrQmxpEwmQZbPMkw2a) and import the preconfigured VirtualBox image (total required space > 12 GB).
+Alternative option: [download](https://drive.google.com/open?id=1XlABUVv7oJZkGwzbMBhx44DT8XsFHr2Q) and import the preconfigured VirtualBox image (total required space > 12 GB).
 [Download VirtualBox](https://www.virtualbox.org/wiki/Downloads) if necessary.
-
----
-NOTE, if you use VirtualBox environment!
-Before you start update HOL desktop environment (VirtualBox image) and install Eclipse.
-
-Depending on your network connection make sure you switched ON or OFF the proxy configuration by clicking the corresponding shortcut on the desktop.
-
-After the proxy configuration double click the **Update** icon and wait until the update process complete. Hit enter when you see the Press [Enter] to close the window message to close the update terminal.
-
-![](tutorial/images/update.HOL.png)
-
-To install Eclipse open terminal window and execute the following script:
-```bash
-/u01/content/vmcontrol/control/bin/installEclipse.sh
-```
-When the script completes you will see a new *Eclipse* icon on the desktop.
 
 
 >This lab assumes that there is folder `/u01` where the projects and sample files will be placed. If you use your own environment then replace the folder path to reflect your environment.
@@ -171,7 +155,6 @@ After using the default config file now customise the configuration on both proj
 
 First for MP project create an external `dev-conference-mp.yaml` config file to `/u01/conf`.
 ```bash
-mkdir -p /u01/conf
 vi /u01/conf/dev-conference-mp.yaml
 ```
 Insert the following content and save:
@@ -264,10 +247,6 @@ To reflect the runtime config changes modify the `io.helidon.examples.conference
 Open the class and add new member to store the value:
 ```java
 private final Supplier<String> greetingSupplier;
-```
-It requires `Supplier` import too, so add the following import to the import section at the top of the class:
-```java
-import java.util.function.Supplier;
 ```
 Modify the constructor `GreetService` method to set supplier instead of the `greeting` member.
 ```java
@@ -418,9 +397,6 @@ A health check is a Java functional interface that returns a  `HealthCheckRespon
 For MP it works out of the box, check http://localhost:8081/health. Or using `curl`:
 ```bash
 curl -s http://localhost:8081/health/ | json_pp
-```
-The result should have similar:
-```bash
 {
    "checks" : [
       {
@@ -499,9 +475,6 @@ connection: keep-alive
 Check the health information again using the browser: http://localhost:8081/health/. Or you can use `curl` again. Find the your custom health data (*"greeting" : "Hello Helidon"*) in the response.
 ```bash
 curl -s http://localhost:8081/health/ | json_pp
-```
-The result should have similar:
-```bash
 {
    "checks" : [
       {
@@ -553,10 +526,6 @@ For demo purposes just display the current timestamp in the health information. 
         .withData("timestamp", System.currentTimeMillis())
         .build())
 ```
-It requires the followin import to be add:
-```java
-import org.eclipse.microprofile.health.HealthCheckResponse;
-```
 The complete `HealthSupport` build part should look like this:
 ```java
 HealthSupport health = HealthSupport.builder()
@@ -574,9 +543,6 @@ Save the changes. Stop the SE application (if necessary) and run again using `Ma
 Check the health information:
 ```bash
 curl -s http://localhost:8080/health/ | json_pp
-```
-The result should have similar:
-```bash
 {
 "checks" : [
    {
@@ -806,13 +772,92 @@ Save the changes and restart the SE application. Open http://localhost:8080/inde
 
 After the application test stop all your running Helidon applications.
 
-### Step 12: Deploy to Kubernetes (OKE)
+### Step 12: Build Native Image
+
+[GraalVM](https://www.graalvm.org/) is an open source, high-performance, polyglot virtual machine developed by Oracle Labs. GraalVM offers multiple features, including the ability to compile Java code ahead-of-time into a native executable binary. The binary can run natively on the operating system, without a Java runtime!
+
+A native executable offers important benefits, like shorter startup time and lower memory footprint. In addition, when a native executable runs within a container, the size of the container image is reduced (when compared with the same Java application running in a traditional JVM), because the container image doesn’t include a Java runtime. An optimized container size is critical for deploying apps to the cloud.
+
+Helidon supports two convenient GraalVM profiles:
+- The *local profile* is for users who have GraalVM installed locally and want to build a native executable for the same OS that they work on.
+- The *Docker profile* is for users who don’t have GraalVM installed locally or want to build native executable for Linux while using different OS locally.
+
+To build using the local profile you need to [download GraalVM](https://github.com/oracle/graal/releases), extract it to some folder on your computer and define *GRAALVM_HOME* environment variable pointing to it.
+
+If you use the provided VirtualBox image that already contains GraalVM. You have to setup the *GRAALVM_HOME* environment variable only.
+
+In this step you are going to use *local profile* to build native executable image.
+
+Open a terminal and change the directory to the workspace  directory:
+```bash
+cd /u01/workspace/
+```
+Create a new Helidon SE quickstart project:
+```bash
+mvn archetype:generate -DinteractiveMode=false \
+    -DarchetypeGroupId=io.helidon.archetypes \
+    -DarchetypeArtifactId=helidon-quickstart-se \
+    -DarchetypeVersion=1.2.0 \
+    -DgroupId=io.helidon.examples \
+    -DartifactId=helidon-quickstart-se \
+    -Dpackage=io.helidon.examples.quickstart.se
+```
+Export the environment variable:
+```bash
+export GRAALVM_HOME=/usr/lib/jvm/graalvm
+```
+Build the native executable binary:
+```bash
+cd /u01/content/helidon-quickstart-se
+mvn package -P native-image
+```
+This build may take some time. After the successful build first run the Java application few times.
+```bash
+$ java -jar target/helidon-quickstart-se.jar
+[DEBUG] (main) Using Console logging
+2019.08.27 16:15:00 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
+2019.08.27 16:15:00 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0xf9652460, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 1524 ms! http://localhost:8080/greet
+^C
+$ java -jar target/helidon-quickstart-se.jar
+[DEBUG] (main) Using Console logging
+2019.08.27 16:15:07 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
+2019.08.27 16:15:08 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0x86ba841f, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 1520 ms! http://localhost:8080/greet
+^C
+$ java -jar target/helidon-quickstart-se.jar
+[DEBUG] (main) Using Console logging
+2019.08.27 16:15:13 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
+2019.08.27 16:15:13 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0x686e81ec, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 1737 ms! http://localhost:8080/greet
+```
+You can see the average startup time is around 1600ms from the above output. Obviously the speed highly depends on the desktop/laptop power.
+Now run the native executable image:
+```bash
+$ target/helidon-quickstart-se
+2019.08.27 16:23:05 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
+2019.08.27 16:23:05 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 7 ms! http://localhost:8080/greet
+^C
+$ target/helidon-quickstart-se
+2019.08.27 16:23:10 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
+2019.08.27 16:23:10 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 9 ms! http://localhost:8080/greet
+^C
+$ target/helidon-quickstart-se
+2019.08.27 16:23:12 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
+2019.08.27 16:23:12 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
+WEB server is up in 6 ms! http://localhost:8080/greet
+```
+In case of the native binary you have to see much better startup time. The output above shows 200X faster startup time which can be very useful for example at scaling or provide *Serverless* like service where the instance is not running continuously but only to fulfil the request.  
+
+### Step 13: Deploy to Kubernetes (OKE)
 
 This step is optional if you have OCI access and available OKE instance.
 
 You can also apply the step to any other Kubernetes environment.
 
-#### 12.1 Build the application Docker image
+#### 13.1 Build the application Docker image
 
 Use again the terminal to build the Helidon SE application Docker image. Make sure you are in the Helidon SE project folder:
 ```bash
@@ -834,7 +879,7 @@ You can check either using `curl http://localhost:8080/greet` command or opening
 
 Stop the running docker container in the terminal using `Ctrl+C`.
 
-#### 12.2 Get an Auth Token
+#### 13.2 Get an Auth Token
 
 In a browser, go to the url you've been given to log in to Oracle Cloud Infrastructure. Specify tenancy, username and password and sign in.
 ![](tutorial/images/30.oci-login-page.png)
@@ -853,7 +898,7 @@ Confirm that you can access Oracle Cloud Infrastructure Registry.
 In the Console, open the navigation menu. Under **Solutions, Platform and Edge**, go to **Developer Services** and click **Registry**. Choose the region in which you will be working (for example, *us-phoenix-1*). Review the repositories that already exist. This tutorial assumes that no repositories have been created yet.
 ![](tutorial/images/33.oci-registry-no-images.png)
 
-#### 12.3 Push the Docker image to the registry
+#### 13.3 Push the Docker image to the registry
 
 For the push you have to create a new image tag which reflects your repository.
 ```bash
@@ -915,7 +960,7 @@ In the browser window showing the Console with the Registry page displayed, clic
 Click the name of the `conference-se` repository that contains the image you just pushed. You see:
 The different images in the repository. In this case, there is only one image, with the tag `1.0`.
 
-#### 12.4 Deploy to OKE (Oracle **Kubernetes** Engine)
+#### 13.4 Deploy to OKE (Oracle **Kubernetes** Engine)
 
 In order to use your Kubernetes cluster you have to configure `kubectl` the client tool on your desktop. To do so follow the [Downloading a kubeconfig File to Enable Cluster Access](https://docs.cloud.oracle.com/iaas/Content/ContEng/Tasks/contengdownloadkubeconfigfile.htm) documentation or [this tutorial](https://github.com/nagypeter/weblogic-operator-tutorial/blob/master/tutorials/setup.oke.md#prepare-oci-cli-to-download-kubernetes-configuration-file).
 
