@@ -833,7 +833,7 @@ The complete *startServer* method should look like the following:
 ```java
 static WebServer startServer() throws IOException {
 
-	long start = System.nanoTime();
+  long start = System.nanoTime();
   // load logging configuration
   LogManager.getLogManager().readConfiguration(
           Main.class.getResourceAsStream("/logging.properties"));
@@ -963,29 +963,32 @@ Confirm that you can access Oracle Cloud Infrastructure Registry.
 In the Console, open the navigation menu. Under **Solutions, Platform and Edge**, go to **Developer Services** and click **Registry**. Choose the region in which you will be working (for example, *us-phoenix-1*). Review the repositories that already exist. This tutorial assumes that no repositories have been created yet.
 ![](tutorial/images/33.oci-registry-no-images.png)
 
+Note your registry name which is the tenancy's namespace. The tenancy namespace is an auto-generated random string of alphanumeric characters. For example on the screenshot above it is: *ansh81vru1zp*.
+You will need soon this.
+
 #### 13.3 Push the Docker image to the registry
 
 For the push you have to create a new image tag which reflects your repository.
 ```bash
-docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>:<TAG>
+docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAMESPACE>/<REPO-NAME>:<TAG>
 ```
 Where:
 
 - **REGION-CODE** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
 - **ocir.io** is the Oracle Cloud Infrastructure Registry name.
-- **TENANCY-NAME** is the name of the tenancy.
+- **TENANCY-NAMESPACE** is the registry name which is the tenancy's namespace. You had to note this in the previous step. The example is: *ansh81vru1zp*
 - **REPO-NAME** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a repository name with unique number e.g. *conference-se01*. Otherwise choose a friendly name for example, *conference-se*.
 - **TAG**: version tag to identify the container packaged application.
 
 For example:
 ```bash
-docker tag conference-se:1.0 iad.ocir.io/weblogick8s/conference-se:1.0
+docker tag conference-se:1.0 iad.ocir.io/ansh81vru1zp/conference-se:1.0
 ```
 Review the list of available images by entering:
 ```bash
 $ docker images
 conference-se                                              1.0                                        842ca67fe519        34 minutes ago      210MB
-iad.ocir.io/weblogick8s/conference-se                      1.0                                        842ca67fe519        34 minutes ago      210MB
+iad.ocir.io/ansh81vru1zp/conference-se                      1.0                                        842ca67fe519        34 minutes ago      210MB
 ```
 To push to the registry you need to log in to Oracle Cloud Infrastructure Registry by entering:
 ```bash
@@ -993,22 +996,22 @@ docker login <region-code>.ocir.io
 ```
 Where <region-code> is the code for the Oracle Cloud Infrastructure Registry region you're using. See above.
 
-When prompted, enter your username in the format `<tenancy>/<username>`. For example, `weblogick8s/jdoe@acme.com`. When password is prompted, enter the auth token you copied earlier as the password.
+When prompted, enter your username in the format `<tenancy-namespace>/<username>`. For example, `ansh81vru1zp/jdoe@acme.com`. When password is prompted, enter the auth token you copied earlier as the password.
 ```bash
 $ docker login iad.ocir.io
-Username: weblogick8s/jdoe@acme.com
+Username: ansh81vru1zp/jdoe@acme.com
 Password:
 Login Succeeded
 ```
 
 As a last step to complete upload to registry, push the Docker image from the client machine to Oracle Cloud Infrastructure Registry by entering:
 ```bash
-docker push <REGION-CODE>.ocir.io/<TENANCY-NAME>/<REPO-NAME>/conference-se:1.0
+docker push <REGION-CODE>.ocir.io/<TENANCY-NAMESPACE>/conference-se:1.0
 ```
 For example:
 ```bash
-$ docker push iad.ocir.io/weblogick8s/conference-se:1.0
-The push refers to repository [iad.ocir.io/weblogick8s/conference-se]
+$ docker push iad.ocir.io/ansh81vru1zp/conference-se:1.0
+The push refers to repository [iad.ocir.io/ansh81vru1zp/conference-se]
 6b8227c1376a: Pushed
 4fb14fbcbea1: Pushed
 0703bce10b9c: Pushed
@@ -1039,7 +1042,7 @@ The repository that you created previously is private. To allow Kubernetes to au
 kubectl create secret docker-registry \
     ocirsecret \
     --docker-server=<region-code>.ocir.io \
-    --docker-username='<tenancy-name>/<oci-username>' \
+    --docker-username='<tenancy-namespace>/<oci-username>' \
     --docker-password='<oci-auth-token>' \
     --docker-email='<email-address>' \
     --namespace helidon
@@ -1049,7 +1052,7 @@ For example:
 $ kubectl create secret docker-registry \
     ocirsecret \
     --docker-server=iad.ocir.io \
-    --docker-username='weblogick8s/jdoe@acme.com' \
+    --docker-username='ansh81vru1zp/jdoe@acme.com' \
     --docker-password='<oci-auth-token>' \
     --docker-email='jdoe@acme.com' \
     --namespace helidon
@@ -1090,7 +1093,7 @@ spec:
       - name: ocirsecret
       containers:
       - name: conference-se
-        image: iad.ocir.io/weblogick8s/conference-se:1.0
+        image: iad.ocir.io/ansh81vru1zp/conference-se:1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
