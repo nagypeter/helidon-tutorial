@@ -20,7 +20,8 @@ elif [ "$(uname -s)" == "Linux" ]; then
 fi
 
 tar xvfz prometheus-*
-cd prometheus*
+prometheus_dir=$(echo */)
+cd $prometheus_dir
 
 cat > prometheus.yml <<EOF
 global:
