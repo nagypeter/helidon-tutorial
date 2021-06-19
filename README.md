@@ -1,63 +1,62 @@
   ![](tutorial/images/logo.png)
 # Helidon tutorial
 
-On this hands on lab you will learn how to write Java microservices application using [Helidon](https://helidon.io/#/). The tutorial covers both programming models: Helidon SE reactive and Helidon MicroProfile (MP) APIs.
+On this hands on lab you will learn how to write Java microservices application using [Helidon](https://helidon.io/#/). The framework supports two programming models for writing microservices: Helidon SE and Helidon MP. Helidon SE is designed to be a microframework that supports the reactive programming model, Helidon MP, on the other hand, is an Eclipse MicroProfile runtime that allows the Jakarta EE community to run microservices in a portable way. MicroProfile contains features like Metrics, Health Check, Streams Operators, Open Tracing, OpenAPI, REST client, and fault tolerance. You can find detailed information about MicroProfile on the [Eclipse MicroProfile](https://projects.eclipse.org/projects/technology.microprofile) site. In both cases, a Helidon microservice is a lightweight Java SE application with minimum dependency requirement, fast startup time and outstanding performance. The tutorial covers both programming models: Helidon SE reactive and Helidon MicroProfile (MP) APIs.
 
 #### Prerequisites
 
-- Java 8+
-- Maven 3.5+
-- Docker
+- Java 11+
+- Maven 3.6+
+- Docker 18+
 - Text editor or IDE to write and modify source code
+- Basic Java software development knowledge
 
-Alternative option: [download](https://drive.google.com/open?id=1XlABUVv7oJZkGwzbMBhx44DT8XsFHr2Q) and import the preconfigured VirtualBox image (total required space > 12 GB).
-[Download VirtualBox](https://www.virtualbox.org/wiki/Downloads) if necessary.
-
-
->This lab assumes that there is folder `/u01` where the projects and sample files will be placed. If you use your own environment then replace the folder path to reflect your environment.
+>This lab uses the Linux home folder `~` where the projects and sample files will be placed. In the tutorial you may see the home folder as`/home/luna.user` name instead of `~` because this tutorial is made and tested against on the luna.oracle.com demo environment.
+If you use your own environment then replace the folder path to reflect your environment.
 
 ### Step 1. Create projects
 
 Create workspace directory for Eclipse:
 ```bash
-mkdir -p /u01/workspace
+cd ~
+mkdir workspace
 ```
 Change the directory:
 ```bash
-cd /u01/workspace
+cd ~/workspace
 ```
 
-#### Generate the *Conference SE* project
+#### Generate the *Helidon Quickstart SE* project
 ```bash
-mvn archetype:generate -DinteractiveMode=false \
+mvn -U archetype:generate -DinteractiveMode=false \
     -DarchetypeGroupId=io.helidon.archetypes \
     -DarchetypeArtifactId=helidon-quickstart-se \
-    -DarchetypeVersion=1.0.0 \
+    -DarchetypeVersion=2.3.0 \
     -DgroupId=io.helidon.examples \
-    -DartifactId=conference-se \
-    -Dpackage=io.helidon.examples.conference.se
+    -DartifactId=helidon-quickstart-se \
+    -Dpackage=io.helidon.examples.quickstart.se
 ```
 
-#### Generate the *Conference MP* project
+#### Generate the *Helidon Quickstart MP* project
 ```bash
-mvn archetype:generate -DinteractiveMode=false \
+mvn -U archetype:generate -DinteractiveMode=false \
     -DarchetypeGroupId=io.helidon.archetypes \
     -DarchetypeArtifactId=helidon-quickstart-mp \
-    -DarchetypeVersion=1.0.0 \
+    -DarchetypeVersion=2.3.0 \
     -DgroupId=io.helidon.examples \
-    -DartifactId=conference-mp \
-    -Dpackage=io.helidon.examples.conference.mp
+    -DartifactId=helidon-quickstart-mp \
+    -Dpackage=io.helidon.examples.quickstart.mp
 ```
 
 ### Step 2: Sanity check
 
 Check both projects:
 ```bash
-cd /u01/workspace/conference-se
+cd ~/workspace/helidon-quickstart-se
 
 mvn clean package
 
-java -jar target/conference-se.jar
+java -jar target/helidon-quickstart-se.jar
 ```
 Try http://localhost:8080/greet in a browser or open new terminal (tab) and use `curl`:
 ```bash
@@ -66,13 +65,13 @@ curl http://localhost:8080/greet
 {"message":"Hello World!"}
 ```
 
-Stop the Java process and check MP version:
+Stop the Java process (press *Ctrl+C* in the terminal where the application is running) and check MP version:
 ```bash
-cd /u01/workspace/conference-mp
+cd ~/workspace/helidon-quickstart-mp
 
 mvn clean package
 
-java -jar target/conference-mp.jar
+java -jar target/helidon-quickstart-mp.jar
 ```
 Try http://localhost:8080/greet in a browser or open new terminal (tab) and use `curl`:
 ```bash
@@ -82,53 +81,63 @@ curl http://localhost:8080/greet
 ```
 Stop the Java process.
 
-### Step 3: Import to Eclipse
+### Step 3: Import the projects into Eclipse
 
-You can use your favourite IDE or text editor. If you use Eclipse follow the import process.
+To build the applications you can use your favourite IDE or text editor. In this tutorial we use the widely adopted Eclipse. The import process is the following:
 
-Launch Eclipse using the desktop icon. During the startup define your workspace folder: `/u01/workspace/` and click **Launch**.
+Launch Eclipse ![](tutorial/images/eclipse.icon.2.png) and during the startup define your workspace folder: `/home/luna.user/workspace` and click **Launch**.
 
 ![](tutorial/images/01.eclipse.workspace.png)
 
 Close the *Welcome* window if you have and select **File->Import** menu item. In the import wizard dialog select **Maven->Existing Maven Projects** and click **Next**.
 
-![](tutorial/images/02.eclipse.import.png.png)
+![](tutorial/images/02.eclipse.import.png)
 
-Select `/u01/workspace/conference-se` and click **Finish**.
+Select `/home/luna.user/workspace/helidon-quickstart-se` and click **Finish**.
 
 ![](tutorial/images/03.select.project.dir.se.png)
 
-Repeat the import steps for the MP project using the `/u01/workspace/conference-mp` folder. Now you have two projects imported in Eclipse.
+Repeat the import steps for the MP project using the `/home/luna.user/workspace/helidon-quickstart-mp` folder.
+
+> ##### Resolve helidon-quickstart-mp Jandex/Maven issue
+If Eclipse shows error for *helidon-quickstart-mp* project then Click **Finish** and **OK** to skip warning.
+To resolve the issue open the `pom.xml` in the *helidon-quickstart-mp* project and find the `<execution>` tag with red underline. Move the cursor above the tag and a recommendation dialog pops up. Select *Mark goal jandex as ignored in pom.xml*.
+![](tutorial/images/03.eclipse.jandex.issue.png)
+Confirm the recommended location and save the `pom.xml` to rebuild the project.
+![](tutorial/images/03.eclipse.jandex.ignore.place.png)
+If the project still shows error then right-click on `pom.xml` and select **Maven -> Update Project...**
+
+Now the applications are imported and ready to develop.
 
 ![](tutorial/images/04.imported.projects.png)
 
-During the steps the Microprofile style `conference-mp` project hereafter referred to as *MP project* while the SE style `conference-se` project hereafter referred to as *SE project*.
+During the steps the Microprofile style `helidon-quickstart-mp` project hereafter referred to as *MP project* while the SE style `helidon-quickstart-se` project hereafter referred to as *SE project*.
 
-After the import using Eclipse take a look on the `Main.java` in both, MP and SE projects. What you see that MP version is more automated while SE the pure version of Helidon requires everything to be done manually. However to start a simple server using `Config` is not a big deal, but comparing to MP requires few more lines.
+After the import using Eclipse you can take a look on the `Main.java` in SE project. SE is the *core* version of Helidon that requires almost everything to be done manually. However Helidon SE is more smaller and faster comparing not just to MP but to other microservices frameworks.
+
+On the other you can't see `Main.class` or starter class in the MP project. Technically, your own main class is not needed unless you want to control the startup sequence. In the next chapter you will create this `Main.class` to change default configuration source and order.
+
+But in case of SE the `Main.class` is there and already contains several configuration elements to activate built in features and the custom logic.
+
+![](tutorial/images/05.se.main.png)
+
+However to start a simple server using `Config` is not a big deal, but comparing to MP requires few more lines.
 
 The other main difference is the implementation of the *Greet* service endpoint. In case of MP it is a well known JAX-RS using annotations (see `GreetResource.java`). Simple coding and the framework does the rest of the job. While SE requires `Routing` definition where the service (see `GreetService.java`) which takes care about the response is registered. Functional, controlled, lightweight and streamlined API usage.
 
 ### Step 4: Using Config
 
+The config component provides a Java API to load and process configuration properties from various sources into a Config object which the application can use to retrieve config data.
+
 The system reads configuration from a *config source*, a physical location (such as a file, a URL, or a `String`) which holds config data. Each config source works with a *config parser* which translates a particular text format (for example, Java properties or YAML) into an in-memory tree which represents the configuration’s structure and values. An optional *polling strategy* detects and publishes changes to the underlying config source so the config source itself or your application can respond.
 
-Your application uses the `Config` object which results from building that in-memory tree to retrieve config data. The app can navigate explicitly among the nodes in the tree and fetch a node’s value. For example:
-```java
-int pageSize = config
-                .get("web")
-                .get("page-size")
-                .asInt()
-                .orElse(20);
-```
-As part of retrieving a value from a node, the config system applies *config filters* which can change what values are returned for selected keys.
+Your application uses the `Config` object which results from building that in-memory tree to retrieve config data. The app can navigate explicitly among the nodes in the tree and fetch a node’s value. The `Config` object lets your application retrieve config data as a typed ConfigValue.
 
-The `Config` object lets your application retrieve config data as a typed ConfigValue.
+The default config uses the following config sources:
 
-The default config uses the following config sources, listed here from most to least important:
-
-1. Java system properties
-2. Environment variables
-3. `microprofile-config.properties` (in case of MP) or  `application.properties` (in case of SE), if available on the classpath.
+1. System properties config source
+2. Environment variables config source
+3. A classpath config source called `application.?` where the `?` depends on supported media types currently on the classpath. By default it is `properties`, if you have YAML support on classpath, it would be `application.yaml` (a `ConfigParser` may add additional supported suffixes for default file)
 
 The priority (most to least important) means that if a given config key appears in more than one source, the value assigned in a more important source overrules the value from a less important source.
 
@@ -142,94 +151,128 @@ server.port=8081
 server.host=0.0.0.0
 ```
 
-Save the config file and start the application using `Main.java`. (Right click on `Main.java` and select **Run->Java Application**)
+![](tutorial/images/06.mp.configuration.png)
 
-![](tutorial/images/05.start.Main.png)
+Save the config file. To run the MP application from Eclipse and adding custom server start and/or configuration we need to implement `Main.class` or starter class.
+Create `Main.class` in the `io.helidon.examples.quickstart.mp` package. Right click on the package name and select **New -> Class**:
+
+![](tutorial/images/07.mp.main.create.png)
+
+Create the class with the default recommendations and replace the content with the following code:
+```java
+package io.helidon.examples.quickstart.mp;
+
+import io.helidon.microprofile.server.Server;
+import java.io.IOException;
+
+public final class Main {
+
+    private Main() { }
+
+    public static void main(final String[] args) throws IOException {
+        Server server = startServer();
+        System.out.println("http://localhost:" + server.port() + "/greet");
+    }
+
+    static Server startServer() {
+        return Server.builder()
+            .build()
+            .start();
+    }
+}
+```
+
+Now Eclipse can simply start the application using the `Main.class`. (Right click on `Main.java` and select **Run->Java Application**)
+
+![](tutorial/images/08.mp.start.main.png)
 
 Check the result in browser: [http://localhost:8081/greet](http://localhost:8081/greet)
-
 
 ### Step 5: Configuration sources, change support
 
 After using the default config file now customise the configuration on both projects.
 
-First for MP project create an external `dev-conference-mp.yaml` config file to `/u01/conf`.
-```bash
-vi /u01/conf/dev-conference-mp.yaml
-```
-Insert the following content and save:
+First for MP project create the `mp-config.yaml` config file in the resources folder. Right click on `src/main/resources` and select **New->Other...**
+![](tutorial/images/09.create.other.png)
+
+Select **General->File** and click **Next**.
+![](tutorial/images/10.create.file.png)
+
+Type `mp-config.yaml` as name.
+![](tutorial/images/11.create.file.name.png)
+
+Copy the following content into the new file and save.
 ```yaml
 app:
- greeting: "Hello Helidon MP"
+ greeting: "Hello Helidon MP from YAML config"
 ```
 
 In the MP project open the `io.helidon.examples.conference.mp.Main` class and add a new `buildConfig` method which reads the new config file.
 ```java
 private static Config buildConfig() {
     return Config.builder()
-            .sources(
-                    file("/u01/conf/dev-conference-mp.yaml")
-                            .optional(),
-                    classpath("application.yaml")
-                            .optional(),
-                    classpath("META-INF/microprofile-config.properties"))
-            .build();
+        .disableEnvironmentVariablesSource()
+        .sources(
+            classpath("mp-config.yaml").optional(),
+            classpath("META-INF/microprofile-config.properties"))
+        .build();
 }
 ```
 Change server startup to:
 ```java
     return Server.builder()
-                    .config(buildConfig())
-                    .build()
-                    .start();
+        .config(buildConfig())
+        .build()
+        .start();
 ```
 If the IDE can't offer the missing import packages then copy from here:
 ```java
 import io.helidon.config.Config;
-
 import static io.helidon.config.ConfigSources.classpath;
-import static io.helidon.config.ConfigSources.file;
 ```
 
 The `Main.java` should be similar:
 
-![](tutorial/images/06.mp.custom.config.png)
+![](tutorial/images/12.mp.main.png)
 
 Run the MP application using `Main.java` and check the result at: [http://localhost:8081/greet](http://localhost:8081/greet)
-![](tutorial/images/07.mp.config.result.png)
+![](tutorial/images/13.mp.config.result.png)
 
-Now modify the SE application but here register polling to watch config file changes.
+Modify the greeting configuration without stopping the application in the `mp-config.yaml` file:
+![](tutorial/images/14.mp.config.change.png)
 
-Create an external `dev-conference-se.yaml` config file to `/u01/conf`.
+Check the runtime changes in the browser.
+![](tutorial/images/15.mp.config.change.result.png)
+
+Now modify the SE application but here register polling to watch config file changes. Due to the polling the application will pick up the configuration changes in the file without the application restart. However this requires external configuration file.
+
+Create the `se-config.properties` config file in the SE project `resources` folder. In the SE project right click on `src/main/resources` and select **New->Other...** than select **General->File** and click **Next**. Type `mp-config.yaml` as name.
+
+Copy the following content and save:
 ```bash
-vi /u01/conf/dev-conference-se.yaml
+app.greeting=Hello Helidon SE
 ```
-Insert the following content and save:
-```yaml
-app:
- greeting: "Hello Helidon SE"
-```
-In the SE project open the `io.helidon.examples.conference.se.Main` class and add a new `buildConfig` method which reads the new config file and register the polling.
+In the SE project open the `io.helidon.examples.conference.se.Main` class and add a new `buildConfig` method which reads the new config file and register the polling. If you have different file location then don't forget to modify the path in the snippet below.
 
 ```java
-    private static Config buildConfig() {
-        return Config.builder()
-            .sources(
-                    file("/u01/conf/dev-conference-se.yaml")
-                            .pollingStrategy(PollingStrategies::watch)
-                            .optional(),
-                    classpath("application.yaml")
-                            .optional())
+private static Config buildConfig() {
+
+    return Config
+            .builder()
+            // specify config sources
+            .sources(file("/home/luna.user/workspace/helidon-quickstart-se/src/main/resources/se-config.properties")
+                .pollingStrategy(regular(Duration.ofSeconds(1))),
+                     classpath("application.yaml"))
             .build();
-    }
+}
 ```
 If the IDE can't offer the missing import packages then copy from here:
 ```java
-import io.helidon.config.Config;
-import io.helidon.config.PollingStrategies;
-
-import static io.helidon.config.ConfigSources.classpath;
 import static io.helidon.config.ConfigSources.file;
+import static io.helidon.config.ConfigSources.classpath;
+import static io.helidon.config.PollingStrategies.regular;
+
+import java.time.Duration;
 ```
 Find the default config creation in the `startServer` method:
 ```java
@@ -241,10 +284,10 @@ Config config = buildConfig();
 ```
 The `Main.java` should look like similar:
 
-![](tutorial/images/08.se.config.main.png)
+![](tutorial/images/16.se.config.main.png)
 
-To reflect the runtime config changes modify the `io.helidon.examples.conference.se.GreetService` class.
-Open the class and add new member to store the value:
+To reflect the runtime config changes modify the `io.helidon.examples.quickstart.se.GreetService` class.
+Open the class and instead of the `private final AtomicReference<String> greeting = new AtomicReference<>();` add a new member to store the value:
 ```java
 private final Supplier<String> greetingSupplier;
 ```
@@ -252,28 +295,31 @@ Modify the constructor `GreetService` method to set supplier instead of the `gre
 ```java
 greetingSupplier = config.get("app.greeting").asString().supplier("Ciao");
 ```
-Finally use the supplier in the `sendResponse` method:
+Use the supplier in the `sendResponse` method (replace the line where is the error):
 ```java
 String msg = String.format("%s %s!", greetingSupplier.get(), name);
 ```
+Finally in the `updateGreetingFromJson` method use the supplier instead of the old `greeting` variable (replace the line where is the error).
+```java
+greetingSupplier = () -> jo.getString("greeting");
+```
 Check your `GreetService` class:
 
-![](tutorial/images/09.se.config.greetservice.png)
+![](tutorial/images/17.se.greetingservice.png)
 
-Run the SE application using `Main.java` and check the result at: [http://localhost:8080/greet](http://localhost:8080/greet)
+Run the SE application using `Main.java` and check the result at: [http://localhost:8080/greet](http://localhost:8080/greet) or using `curl` from Terminal window.
 ```bash
 curl http://localhost:8080/greet
-{"message":"Hello Helidon SE World!"}
+{"message":"Hello Helidon SE from YAML config World!"}
 ```
-Now change the `dev-conference-se.yaml` config file *greeting* property:
-```yaml
-app:
- greeting: "Hello Helidon SE MODIFIED"
+Now change the `se-config.properties` config file *greeting* property:
+```bash
+app.greeting=Hello Helidon SE from YAML config 2
 ```
 Save the changes and check again the response of the application. Shortly you have to see the new result:
 ```bash
 curl http://localhost:8080/greet
-{"message":"Hello Helidon SE MODIFIED World!"}
+{"message":"Hello Helidon SE from YAML config 2 World!"}
 ```
 
 ### Step 6: Metrics
@@ -282,9 +328,78 @@ Helidon provides the following to support metrics:
 
 1. The endpoint `/metrics`: A configurable endpoint that exposes metrics information in JSON format (as specified by the MicroProfile Metrics specification) or in plain text (for Prometheus metrics).
 Check the plain text using browser: http://localhost:8081/metrics
+```
+# TYPE base_REST_request_total counter
+# HELP base_REST_request_total The number of invocations and total response time of RESTful resource methods since the start of the server.
+base_REST_request_total{class="io.helidon.examples.quickstart.mp.GreetResource",method="getDefaultMessage"} 1
+# TYPE base_REST_request_elapsedTime_seconds gauge
+base_REST_request_elapsedTime_seconds{class="io.helidon.examples.quickstart.mp.GreetResource",method="getDefaultMessage"} 0.004993732
+base_REST_request_total{class="io.helidon.examples.quickstart.mp.GreetResource",method="getMessage_java.lang.String"} 0
+base_REST_request_elapsedTime_seconds{class="io.helidon.examples.quickstart.mp.GreetResource",method="getMessage_java.lang.String"} 0.0
+base_REST_request_total{class="io.helidon.examples.quickstart.mp.GreetResource",method="updateGreeting_javax.json.JsonObject"} 0
+base_REST_request_elapsedTime_seconds{class="io.helidon.examples.quickstart.mp.GreetResource",method="updateGreeting_javax.json.JsonObject"} 0.0
+# TYPE base_classloader_loadedClasses_count gauge
+# HELP base_classloader_loadedClasses_count Displays the number of classes that are currently loaded in the Java virtual machine.
+base_classloader_loadedClasses_count 8873
+# TYPE base_classloader_loadedClasses_total counter
+# HELP base_classloader_loadedClasses_total Displays the total number of classes that have been loaded since the Java virtual machine has started execution.
+base_classloader_loadedClasses_total 8873
+# TYPE base_classloader_unloadedClasses_total counter
+# HELP base_classloader_unloadedClasses_total Displays the total number of classes unloaded since the Java virtual machine has started execution.
+base_classloader_unloadedClasses_total 0
+# TYPE base_cpu_availableProcessors gauge
+# HELP base_cpu_availableProcessors Displays the number of processors available to the Java virtual machine. This value may change during a particular invocation of the virtual machine.
+base_cpu_availableProcessors 4
+# TYPE base_cpu_systemLoadAverage gauge
+# HELP base_cpu_systemLoadAverage Displays the system load average for the last minute. The system load average is the sum of the number of runnable entities queued to the available processors and the number of runnable entities running on the available processors averaged over a period of time. The way in which the load average is calculated is operating system specific but is typically a damped timedependent average. If the load average is not available, a negative value is displayed. This attribute is designed to provide a hint about the system load and may be queried frequently. The load average may be unavailable on some platforms where it is expensive to implement this method.
+base_cpu_systemLoadAverage 3.04638671875
+# TYPE base_gc_time_seconds gauge
+# HELP base_gc_time_seconds Displays the approximate accumulated collection elapsed time in milliseconds. This attribute displays -1 if the collection elapsed time is undefined for this collector. The Java virtual machine implementation may use a high resolution timer to measure the elapsed time. This attribute may display the same value even if the collection count has been incremented if the collection elapsed time is very short.
+base_gc_time_seconds{name="G1 Old Generation"} 0.0
+base_gc_time_seconds{name="G1 Young Generation"} 0.06
+# TYPE base_gc_total counter
+# HELP base_gc_total Displays the total number of collections that have occurred. This attribute lists -1 if the collection count is undefined for this collector.
+base_gc_total{name="G1 Old Generation"} 0
+base_gc_total{name="G1 Young Generation"} 7
+# TYPE base_jvm_uptime_seconds gauge
+# HELP base_jvm_uptime_seconds Displays the start time of the Java virtual machine in milliseconds. This attribute displays the approximate time when the Java virtual machine started.
+base_jvm_uptime_seconds 19847.099
+# TYPE base_memory_committedHeap_bytes gauge
+# HELP base_memory_committedHeap_bytes Displays the amount of memory in bytes that is committed for the Java virtual machine to use. This amount of memory is guaranteed for the Java virtual machine to use.
+base_memory_committedHeap_bytes 325058560
+# TYPE base_memory_maxHeap_bytes gauge
+# HELP base_memory_maxHeap_bytes Displays the maximum amount of heap memory in bytes that can be used for memory management. This attribute displays -1 if the maximum heap memory size is undefined. This amount of memory is not guaranteed to be available for memory management if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.
+base_memory_maxHeap_bytes 4294967296
+# TYPE base_memory_usedHeap_bytes gauge
+# HELP base_memory_usedHeap_bytes Displays the amount of used heap memory in bytes.
+base_memory_usedHeap_bytes 50400208
+# TYPE base_thread_count gauge
+# HELP base_thread_count Displays the current number of live threads including both daemon and nondaemon threads
+base_thread_count 31
+# TYPE base_thread_daemon_count gauge
+# HELP base_thread_daemon_count Displays the current number of live daemon threads.
+base_thread_daemon_count 25
+# TYPE base_thread_max_count gauge
+# HELP base_thread_max_count Displays the peak live thread count since the Java virtual machine started or peak was reset. This includes daemon and non-daemon threads.
+base_thread_max_count 31
+# TYPE vendor_requests_count_total counter
+# HELP vendor_requests_count_total Each request (regardless of HTTP method) will increase this counter
+vendor_requests_count_total 5
+# TYPE vendor_requests_meter_total counter
+# HELP vendor_requests_meter_total Each request will mark the meter to see overall throughput
+vendor_requests_meter_total 5
+# TYPE vendor_requests_meter_rate_per_second gauge
+vendor_requests_meter_rate_per_second 2.519667012244372E-4
+# TYPE vendor_requests_meter_one_min_rate_per_second gauge
+vendor_requests_meter_one_min_rate_per_second 0.011458136074669095
+# TYPE vendor_requests_meter_five_min_rate_per_second gauge
+vendor_requests_meter_five_min_rate_per_second 0.0030925140804588976
+# TYPE vendor_requests_meter_fifteen_min_rate_per_second gauge
+vendor_requests_meter_fifteen_min_rate_per_second 0.0010836791284289167
+```
 For JSON result use `curl`:
 ```bash
-curl -s -H 'Accept: application/json' -X GET http://localhost:8081/metrics/ | json_pp
+curl -s -H 'Accept: application/json' -X GET http://localhost:8081/metrics/
 {
    "vendor" : {
       "requests.count" : 2,
@@ -322,42 +437,41 @@ Check the plain text result using browser: http://localhost:8081/metrics/vendor
 
 #### Add custom metrics
 
-In case of MP it is basically just an annotation. Add the following annotation to the `getDefaultMessage` method in the  `io.helidon.examples.conference.mp.GreetResource` class.
+In case of MP it is basically just an annotation. Add the following annotation to the `getDefaultMessage` method in the  `io.helidon.examples.quickstart.mp.GreetResource` class.
 
 ```java
 @Timed
-@Counted(name = "greet.default.counter", monotonic = true, absolute = true)
+@Counted(name = "my-mp-metrics", absolute = true)
 ```
 
-![](tutorial/images/10.mp.metrics.greetresource.png)
+![](tutorial/images/18.mp.custom.metrics.png)
 
 Save the changes, stop the running application if necessary and run again `Main.java` in MP project.
 
-Check the result at: http://localhost:8081/metrics/application/greet.default.counter
-Refresh few times the http://localhost:8081/greet page and check again the counter. You can use `curl`:
+Check the result at: http://localhost:8081/metrics/application/my-mp-metrics
+Refresh few times the http://localhost:8081/greet page and check again the counter:
 ```bash
-curl http://localhost:8081/metrics/application/greet.default.counter
-# TYPE application:greet_default_counter counter
-# HELP application:greet_default_counter
-application:greet_default_counter 1
+# TYPE application_my_mp_metrics_total counter
+# HELP application_my_mp_metrics_total
+application_my_mp_metrics_total 1
 ```
 
-Another metric types also available for Prometheus about the configured method. You can check at http://localhost:8081/metrics/application/io.helidon.examples.conference.mp.GreetResource.getDefaultMessage. These are history/summary and gauge type metrics.
+Another metric types also available for Prometheus about the configured method. You can check at http://localhost:8081/metrics/application/io.helidon.examples.quickstart.mp.GreetResource.getDefaultMessage. These are history/summary and gauge type metrics.
 
 In SE project we need more coding. Remember, no magic here : )
 
-Add metric support to `GreetService.java` in the constructor. Also create `defaultMessageCounter` member:
+Add metric support to `GreetService.java` in the constructor. Also create `defaultMessageCounter` member to store the actual value:
 ```java
 private final Counter defaultMessageCounter;
 
 GreetService(Config config) {
   greetingSupplier = config.get("app.greeting").asString().supplier("Ciao");
-  RegistryFactory metricsRegistry = RegistryFactory.getRegistryFactory().get();
-    MetricRegistry appRegistry = metricsRegistry.getRegistry(MetricRegistry.Type.APPLICATION);   
-    this.defaultMessageCounter = appRegistry.counter("greet.default.counter");
+  RegistryFactory metricsRegistry = RegistryFactory.getInstance();
+  MetricRegistry appRegistry = metricsRegistry.getRegistry(MetricRegistry.Type.APPLICATION);
+  defaultMessageCounter = appRegistry.counter("my-se-metrics");
 }
  ```
-Add metric support (`defaultMessageCounter.inc();`) to `getDefaultMessageHandler` too:
+Increment the counter value when `getDefaultMessageHandler` is called:
 ```java
 private void getDefaultMessageHandler(ServerRequest request,
                                ServerResponse response) {
@@ -365,17 +479,31 @@ private void getDefaultMessageHandler(ServerRequest request,
     sendResponse(response, "World");
 }
 ```
-![](tutorial/images/11.se.metrics.greetservice.png)
+![](tutorial/images/19.se.custom.metrics.png)
 Save the changes. Stop the SE application if necessary and run again using `Main.java` in SE project.
 
-After hitting few times the http://localhost:8080/greet/ check the metrics at http://localhost:8080/metrics/application/greet.default.counter.
-You still can use `curl` instead of browser:
+After hitting few times the http://localhost:8080/greet/ check the metrics at http://localhost:8080/metrics/application/my-se-metrics:
 ```bash
-curl http://localhost:8080/metrics/application/greet.default.counter
-# TYPE application:greet_default_counter counter
-# HELP application:greet_default_counter
-application:greet_default_counter 11
+# TYPE application_my_se_metrics_total counter
+# HELP application_my_se_metrics_total
+application_my_se_metrics_total 3
 ```
+#### Use Prometheus to monitor metrics
+
+Prometheus is an open-source systems monitoring and alerting toolkit. Prometheus joined the Cloud Native Computing Foundation in 2016 as the second hosted project, after Kubernetes. Its main feature is the multi-dimensional data model with time series data identified by metric name and key/value pairs.
+
+Prometheus is a Java based application what you need to download, configure and run to collect metrics from application like Helidon.
+
+Run the script below which does all the necessary step fopr you. (It requires Java.):
+
+```bash
+curl -LSs https://raw.githubusercontent.com/nagypeter/helidon-tutorial/master/scripts/setup.prometheus.sh | bash
+```
+
+When the script completes you can see the log entries of Prometheus. Open http://localhost:9090/ and select your custom metrics produced by Helidon.
+Start typing "my" in expression field and list appears with recommendations. Select e.g. *application_my_mp_metrics_total* and click **Execute** to add this metrics to the panel. You can see the current value but you can also change to graph view. To increase the value hit the http://localhost:8081/greet few times. You can play and check with other metrics.
+
+![](tutorial/images/20.prometheus.png)
 
 ### Step 7: Health checks
 
@@ -390,35 +518,38 @@ A typical health check combines the statuses of all the dependencies that affect
 - database
 - other services used by your application
 
-A health check is a Java functional interface that returns a  `HealthCheckResponse` object. You can choose to implement a health check inline with a lambda expression or you can reference a method with the double colon operator `::`
-
 #### MP Health checks
 
-For MP it works out of the box, check http://localhost:8081/health. Or using `curl`:
-```bash
-curl -s http://localhost:8081/health/ | json_pp
-```
+Helidon MP implements the MicroProfile Health spec. The spec prescribes how external tools probe a service’s health checks and how you implement health checks as part of your microservice that are specific to your service’s needs.
+
+Helidon provides built-in, default checks for each endpoint. The built-in liveness checks include various environmental values, such as whether the JVM has detected deadlocks or whether there is sufficient heap space. The built-in readiness check always reports `UP`. Check built-in health status at http://localhost:8081/health.
 The result should have similar:
 ```bash
 {
+   "outcome": "UP",
+   "status": "UP",
    "checks" : [
       {
          "name" : "deadlock",
-         "state" : "UP"
+         "state" : "UP",
+         "status": "UP"
       },
       {
+        "name": "diskSpace",
+        "state": "UP",
+        "status": "UP",
          "data" : {
             "freeBytes" : 206935879680,
             "totalBytes" : 499963174912,
             "percentFree" : "41.39%",
             "total" : "465.63 GB",
             "free" : "192.72 GB"
-         },
-         "state" : "UP",
-         "name" : "diskSpace"
+         }
       },
       {
-         "name" : "heapMemory",
+        "name": "heapMemory",
+        "state": "UP",
+        "status": "UP",
          "data" : {
             "freeBytes" : 214995600,
             "totalBytes" : 240648192,
@@ -427,292 +558,299 @@ The result should have similar:
             "max" : "3.56 GB",
             "percentFree" : "99.33%",
             "maxBytes" : 3817865216
-         },
-         "state" : "UP"
-      }
-   ],
-   "outcome" : "UP"
-}
-```
-To add custom health check create a new class called `GreetHealthcheck` in `io.helidon.examples.conference.mp` package. To demonstrate health check you will use that message which can be stored using PUT method on the `/greet/greeting` path.
-(To create new class right click on the `io.helidon.examples.conference.mp` package under the *conference-mp* project in the left Project Explorer area and select **New->Class** menu item.) Copy the the content below into the new `GreetHealthcheck` class.
-```java
-package io.helidon.examples.conference.mp;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.health.Health;
-import org.eclipse.microprofile.health.HealthCheck;
-import org.eclipse.microprofile.health.HealthCheckResponse;
-
-@Health
-@ApplicationScoped
-public class GreetHealthcheck implements HealthCheck {
-   private GreetingProvider provider;
-
-   @Inject
-   public GreetHealthcheck(GreetingProvider provider) {
-       this.provider = provider;
-   }
-
-   @Override
-   public HealthCheckResponse call() {
-       String message = provider.getMessage();
-       return HealthCheckResponse.named("greeting")
-               .state("Hello".equals(message))
-               .withData("greeting", message)
-               .build();
-   }
-}
-```
-![](tutorial/images/12.mp.custom.health.png)
-
-Save the changes. Stop the SE application if necessary and run again. First set your message:
-```bash
-curl -i -X PUT -H "Content-Type: application/json" -d '{"greeting":"Hello Helidon"}' http://localhost:8081/greet/greeting
-HTTP/1.1 204 No Content
-Date: Sat, 6 Apr 2019 21:01:34 +0200
-connection: keep-alive
-```
-Check the health information again using the browser: http://localhost:8081/health/. Or you can use `curl` again. Find the your custom health data (*"greeting" : "Hello Helidon"*) in the response.
-```bash
-curl -s http://localhost:8081/health/ | json_pp
-```
-The result should have similar:
-```bash
-{
-   "checks" : [
-      {
-         "state" : "UP",
-         "name" : "deadlock"
-      },
-      {
-         "data" : {
-            "freeBytes" : 206927556608,
-            "percentFree" : "41.39%",
-            "total" : "465.63 GB",
-            "free" : "192.72 GB",
-            "totalBytes" : 499963174912
-         },
-         "name" : "diskSpace",
-         "state" : "UP"
-      },
-      {
-         "data" : {
-            "greeting" : "Hello Helidon"
-         },
-         "state" : "DOWN",
-         "name" : "greeting"
-      },
-      {
-         "state" : "UP",
-         "name" : "heapMemory",
-         "data" : {
-            "totalBytes" : 330825728,
-            "free" : "290.28 MB",
-            "max" : "3.56 GB",
-            "percentFree" : "99.31%",
-            "total" : "315.50 MB",
-            "maxBytes" : 3817865216,
-            "freeBytes" : 304383072
          }
       }
-   ],
-   "outcome" : "DOWN"
+   ]
 }
+```
+
+MicroProfile Health supports two types of health checks:
+- **Liveness** checks report whether the runtime environment in which the service is running is sufficient to support the work the service performs. The environment is beyond the control of the service itself and typically cannot improve without outside intervention. If a microservice instance reports a `DOWN` liveness check, it should never report `UP` later. It will need to be stopped and a replacement instance created.
+- **Readiness** checks report whether the service is currently capable of performing its work. A service that reports `DOWN` for its readiness cannot at the moment do its job, but at some future point it might become able to do so without requiring a restart.
+
+##### MP Liveness Health Check
+
+To add custom liveness health check create a new class called `GreetLivenessCheck` in `io.helidon.examples.quickstart.mp` package.
+(To create new class right click on the `io.helidon.examples.quickstart.mp` package under the *helidon-quickstart-mp* project in the left Project Explorer area and select **New->Class** menu item. Type the class name: `GreetLivenessCheck` and click **OK**.) Copy the the content below into the new class.
+```java
+package io.helidon.examples.quickstart.mp;
+
+import javax.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Liveness;
+
+@Liveness
+@ApplicationScoped
+public class GreetLivenessCheck implements HealthCheck {
+
+	@Override
+	public HealthCheckResponse call() {
+		return HealthCheckResponse.named("MyMPLivenessCheck").up().withData("time", System.currentTimeMillis()).build();
+	}
+}
+```
+![](tutorial/images/21.mp.liveness.png)
+
+Of course this check doesn't do a real check just demonstrates the place and method for such custom action. It only shows the current time and return `UP` status always.
+Save the changes. Stop the MP application if necessary and run again. Check the health information again using the browser: http://localhost:8081/health/ and find the your custom (MyMPLivenessCheck) health data in the response:
+```bash
+{
+  "name": "MyMPLivenessCheck",
+  "state": "UP",
+  "status": "UP",
+  "data": {
+    "time": 1624090912474
+  }
+},
+```
+
+##### MP Readiness Health Check
+
+To add custom readiness health check create a new class called `GreetReadinessCheck` in `io.helidon.examples.quickstart.mp` package.
+(To create new class right click on the `io.helidon.examples.quickstart.mp` package under the *helidon-quickstart-mp* project in the left Project Explorer area and select **New->Class** menu item. Type the class name: `GreetReadinessCheck` and click **OK**.) Copy the the content below into the new class.
+```java
+package io.helidon.examples.quickstart.mp;
+
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.enterprise.context.ApplicationScoped;
+
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
+
+@Readiness
+@ApplicationScoped
+public class GreetReadinessCheck implements HealthCheck {
+  private AtomicLong readyTime = new AtomicLong(0);
+
+
+  @Override
+  public HealthCheckResponse call() {
+    return HealthCheckResponse.named("MyMPReadinessCheck")  
+        .state(isReady())
+        .withData("time", readyTime.get())
+        .build();
+  }
+
+  public void onStartUp(
+      @Observes @Initialized(ApplicationScoped.class) Object init) {
+    readyTime = new AtomicLong(System.currentTimeMillis());
+  }
+
+  /**
+   * Become ready after 10 seconds
+   *
+   * @return true if application ready
+   */
+  private boolean isReady() {
+    return Duration.ofMillis(System.currentTimeMillis() - readyTime.get()).getSeconds() >= 10;
+  }
+}
+```
+
+![](tutorial/images/22.mp.readiness.png)
+
+This check also doesn't do any check but what is important here application needs time to start properly. To demonstrate this delay the `isReady` method return true after 10 seconds of the application start. Before you restart the application make your browser (http://localhost:8081/health) ready to see the different states of the `MyMPReadinessCheck`.
+
+```bash
+{
+  "name": "MyMPReadinessCheck",
+  "state": "UP",
+  "status": "UP",
+  "data": {
+    "time": 1624093400263
+  }
+},
 ```
 
 #### SE Health checks
 
-For demo purposes just display the current timestamp in the health information. Add the following configuration to `HealthSupport`:
+Actually in case of SE is still easy to add customer health check. Instead of annotation you need to add your custom health check when you build and register the `HealthSupport`. To make it simpler the check is implemented in place without introducing a new class. This check will always  return `UP` state and current time in millisecond as value. The SE quickstart project already configured to produce built-in health check, thus you need to just add additional custom check.
+Modify `HealthSupport` build in the SE project's `Main.class`. This part can be found in the `createRouting` method:
 ```java
-.add(() -> HealthCheckResponse.named("custom")
+.addReadiness(() -> HealthCheckResponse.named("MySEReadinessCheck")
         .up()
-        .withData("timestamp", System.currentTimeMillis())
+        .withData("time", System.currentTimeMillis())
         .build())
 ```
 The complete `HealthSupport` build part should look like this:
 ```java
 HealthSupport health = HealthSupport.builder()
-        .add(HealthChecks.healthChecks())   // Adds a convenient set of checks
-        .add(() -> HealthCheckResponse.named("custom")
+        .addLiveness(HealthChecks.healthChecks())
+        .addReadiness(() -> HealthCheckResponse.named("MySEReadinessCheck")
                 .up()
-                .withData("timestamp", System.currentTimeMillis())
+                .withData("time", System.currentTimeMillis())
                 .build())
         .build();
 ```
-![](tutorial/images/13.se.custom.health.png)
+![](tutorial/images/23.se.readiness.png)
 
 Save the changes. Stop the SE application (if necessary) and run again using `Main.java`.
 
-Check the health information:
-```bash
-curl -s http://localhost:8080/health/ | json_pp
-```
-The result should have similar:
+Check that the health information contains the new custome check:
 ```bash
 {
-"checks" : [
-   {
-      "state" : "UP",
-      "name" : "custom",
-      "data" : {
-         "timestamp" : 1554580079074
-      }
-   },
-   {
-      "state" : "UP",
-      "name" : "deadlock"
-   },
-   {
-      "state" : "UP",
-      "data" : {
-         "totalBytes" : 499963174912,
-         "free" : "192.69 GB",
-         "freeBytes" : 206897905664,
-         "percentFree" : "41.38%",
-         "total" : "465.63 GB"
-      },
-      "name" : "diskSpace"
-   },
-   {
-      "data" : {
-         "totalBytes" : 257425408,
-         "free" : "185.24 MB",
-         "maxBytes" : 3817865216,
-         "max" : "3.56 GB",
-         "total" : "245.50 MB",
-         "percentFree" : "98.34%",
-         "freeBytes" : 194234200
-      },
-      "name" : "heapMemory",
-      "state" : "UP"
-   }
-],
-"outcome" : "UP"
-}
+  "name": "MySEReadinessCheck",
+  "state": "UP",
+  "status": "UP",
+  "data": {
+    "time": 1624093811991
+  }
+},
 ```
-At the beginning you can see the custom data including the current times in milliseconds.
 
 ### Step 8: Connect the services
 
-In this example MP application will call the SE application's service.
+In this example MP application will call the SE application's service. This communication is very common in microservices architecture. MicroProfile Rest Client adds the capability to invoke remote microservices using a JAX-RS like interface to declare the operations.
 
-Add `WebTarget` to the `GreetResource` of the MP application:
+Since you are dealing with remote object first you need to create a rest client interface. A rest client interface can be annotated with `@RegisterRestClient` to automatically register it with CDI. The `RegisterRestClient` annotation has a property `baseUri` that can be used to define the base endpoint of this client. In the interface you need to only define the necessary endpoints which is now the `/greet/{name}`.
+To create new interface right click on the `io.helidon.examples.quickstart.mp` package under the *helidon-quickstart-mp* project in the left Project Explorer area and select **New->Interface** menu item. Type the interface name: `GreetRestClient` and click **OK**. Please pay attention, now you need to create **interface** and not **class**!
+Copy the following source in the new interface.
+
 ```java
-@Uri("http://localhost:8080/greet")
-@SecureClient
-private WebTarget target;
+package io.helidon.examples.quickstart.mp;
+
+import javax.json.JsonObject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@RegisterRestClient(baseUri="http://localhost:8080/greet")
+interface GreetRestClient {
+
+     @GET
+     JsonObject getDefaultMessage();
+
+     @Path("/{name}")
+     @GET
+     JsonObject getMessage(@PathParam("name") String name);
+
+}
 ```
-If the IDE can't offer the missing import packages then copy from here:
+By calling `GreetRestClient.getMessage()` you reach the endpoint of the SE application.
+![](tutorial/images/24.mp.rest.client.interface.png)
+
+Once a rest client interface is annotated, it can be injected into any CDI bean. Open `GreetResource.java` and add the following part example after the last method:
 ```java
-import javax.ws.rs.client.WebTarget;
-import org.glassfish.jersey.server.Uri;
-import io.helidon.security.integration.jersey.SecureClient;
-```
-Add a new method that calls the SE service:
-```java
+@Inject
+@RestClient
+GreetRestClient restClient;
+
 @GET
 @Path("/outbound/{name}")
 public JsonObject outbound(@PathParam("name") String name) {
-   return target.path(name)
-           .request()
-           .accept(MediaType.APPLICATION_JSON_TYPE)
-           .get(JsonObject.class);
+   return restClient.getMessage(name);
 }
 ```
-![](tutorial/images/14.mp.outbound.png)
-
-Save the changes, restart the MP application and test the outbound call: http://localhost:8081/greet/outbound/jack or using `curl`:
+This part injects the interface and define `/outbound/{name}` endpoint for MP application to invoke the REST call to the SE application.
+Usually the member declaration happens before the method(s) declaration but for easier understanding just copy together after the last method.
+![](tutorial/images/25.mp.rest.client.inject.png)
+Save the changes, restart the MP application and test the outbound call: http://localhost:8081/greet/outbound/Jack:
 ```bash
-curl http://localhost:8081/greet/outbound/jack
-{"message":"Hello Helidon SE MODIFIED jack!"}
+{"message":"Hello Helidon SE from YAML config 2 J ack!"}
 ```
 You have to see the SE application's message including the name appended to the outbound path as parameter.
 
 ### Step 9: Tracing
 
-Helidon includes support for tracing through the OpenTracing APIs. Tracing is integrated with WebServer and Security.
-Helidon has an integration with Zipkin tracer. To start the tracer you can use docker:
+Helidon includes support for tracing through the OpenTracing APIs. Tracing is integrated with WebServer and Security. Helidon has further integration with Zipkin and Jaeger tracer tools. This lab demonstrates Zipkin usage.
+
+#### Activate Tracing in SE Application
+
+To activate tracing in SE application first add necessary libraries (dependencies) to the Maven project, `pom.xml`. Find the `<dependencies>` list and insert the following elements:
+```xml
+<dependency>
+  <groupId>io.helidon.tracing</groupId>
+  <artifactId>helidon-tracing</artifactId>
+</dependency>
+<dependency>
+  <groupId>io.helidon.tracing</groupId>
+  <artifactId>helidon-tracing-zipkin</artifactId>
+</dependency>
+```
+![](tutorial/images/26.se.tracin.pom.png)
+Save the `pom.xml`.
+
+In quickstart project the tracer is not registered in the webserver. To do so open the `Main.java` and find `startServer` method and add the following line in the builder part:
+```java
+.tracer(TracerBuilder.create(config.get("tracing")).build())
+```
+The webserver creation should look like the following:
+```java
+WebServer server = WebServer.builder(createRouting(config))
+        .config(config.get("server"))
+        .tracer(TracerBuilder.create(config.get("tracing")).build())
+        .addMediaSupport(JsonpSupport.create())
+        .build();
+```
+![](tutorial/images/27.se.tracer.main.png)
+Save the `Main.java` class.
+
+Finally open the `application.yaml` configuration file and add tracing configuration element. It is enough to just set a name for the tracing service what will be displayed for this application in Zipkin. The other parameters can be default.
+```yaml
+tracing:
+  service: helidon-se
+```
+![](tutorial/images/28.se.tracer.config.png)
+Save the `application.yaml` and restart the SE application.
+
+#### Activate Tracing in MP Application
+
+To switch on the tracing in MP application add only the Zipkin tracing dependency to the MP application's `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>io.helidon.tracing</groupId>
+    <artifactId>helidon-tracing-zipkin</artifactId>
+</dependency>
+```
+![](tutorial/images/29.mp.tracer.pom.png)
+Save the changes.
+
+Configure the service name here too in the `microprofile-config.properties` property file which is located under `src/main/resources/META-INF` folder. Add the following property:
+```java
+tracing.service=helidon-mp
+```
+![](tutorial/images/30.mp.tracer.config.png)
+Save changes and restart the MP application.
+
+#### Start Zipkin and monitor applications
+
+To start Zipkin tracer without docker installed run the following script:
 ```bash
-docker run -d -p 9411:9411 openzipkin/zipkin
+curl -LSs https://raw.githubusercontent.com/nagypeter/helidon-tutorial/master/scripts/setup.zipkin.sh | bash
 ```
 This will start the Zipkin tracer on `http://localhost:9411` - this is
 also the default configuration that Helidon expects.
 
-Once the MP service is integrated with Zipkin, it will
-automatically propagate the Zipkin headers to connect the traces
-of MP and SE service.
+You can open the dashboard on http://localhost:9411/zipkin/
 
-You can check the progress on http://localhost:9411/zipkin/
-
-### Activate Tracing in MP
-
-To switch on the tracing in MP application add the following dependencies to your `pom.xml`:
-
-```xml
-<dependency>
-    <groupId>io.helidon.microprofile.tracing</groupId>
-    <artifactId>helidon-microprofile-tracing</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.helidon.tracing</groupId>
-    <artifactId>helidon-tracing-zipkin</artifactId>
-</dependency>
-```
-![](tutorial/images/15.mp.tracing.pom.png)
-Save the changes.
-
-Configure the service name in the `microprofile-config.properties` property file which is located under `src/main/resources/META-INF` folder. Add the following property:
-```java
-tracing.service=helidon-mp
-```
-![](tutorial/images/16.mp.tracing.property.png)
-
-Save changes and restart the MP application.
-
-#### Activate Tracing in SE
-
-To switch on the tracing in SE application add the following dependencies to your `pom.xml`:
-```xml
-<dependency>
-    <groupId>io.helidon.tracing</groupId>
-    <artifactId>helidon-tracing-zipkin</artifactId>
-</dependency>
-```
-![](tutorial/images/17.se.tracing.pom.png)
-
-Register the tracer with the webserver in the `Main` class `startServer` method:
-```java
-ServerConfiguration serverConfig =
-                ServerConfiguration.builder(config.get("server"))
-                        .tracer(TracerBuilder.create("helidon-se")
-                                        .buildAndRegister())
-                        .build();
-```
-![](tutorial/images/18.se.tracing.main.png)
-
-Save the changes and restart the SE application.
-
-Now invoke again the outbound call using browser http://localhost:8081/greet/outbound/jack or `curl`:
+Now to generate tracing information invoke again the outbound call using the browser http://localhost:8081/greet/outbound/Bill:
 ```bash
-curl http://localhost:8081/greet/outbound/jack
-{"message":"Hello Helidon SE MODIFIED jack!"}
+{"message": "Hello Helidon SE from YAML config 2 Bill!"}
 ```
-Now open Zipkin to see the tracing information: http://localhost:9411/zipkin/
-Click the **Find Traces** button.
+Now open Zipkin to see the tracing information: http://localhost:9411/zipkin/ and on the (default) *Find a trace* page click the **Run Query** button. If you have multiple results click **Expand All** to find easily that which has multiple components in the transaction. Then open the details with **Show** button.  
 
-![](tutorial/images/19.zipkin.png)
-Click the *helidon-mp* result (blue-line) and watch the detailed tracing result where both services are involved.
-![](tutorial/images/20.zipkin.trace.result.png)
+![](tutorial/images/31.zipkin.find.trace.png)
+
+There you can see the detailed tracing result where both services are involved.
+![](tutorial/images/32.zipkin.details.png)
 
 ### Step 10: Fault Tolerance
 
 Shutdown the SE service.
 
-Try invoking the `/greet/outbound` endpoint: http://localhost:8081/greet/outbound/jack. You should get an internal server error.
-![](tutorial/images/21.http.500.png)
+Try invoking the `/greet/outbound` endpoint: http://localhost:8081/greet/outbound/Jack. You should get an internal server (HTTP ERROR 500) error.
+
+![](tutorial/images/33.http.error.png)
+
+To avoid such failure a microservices application always needs to prepared for such situation like service restarts, network delays, temporal infrastructure instabilities, etc. Fault Tolerance is a MicroProfile specification which improves application robustness by providing support to conveniently handle error conditions (faults) that may occur in real-world applications.
 
 Add annotation to the method `outbound` in `GreetResource.java` in the MP project:
 ```java
@@ -725,27 +863,39 @@ public JsonObject onFailureOutbound(String name) {
     return Json.createObjectBuilder().add("Failed", name).build();
 }
 ```
-![](tutorial/images/22.mp.add.fault.tolerance.png)
+![](tutorial/images/34.fallback.method.png)
 
-Save changes restart both, MP and SE applications and validate that works as expected: http://localhost:8081/greet/outbound/jack
+Save changes restart both, MP and SE applications and validate that works as expected: http://localhost:8081/greet/outbound/Jack
 
 Shutdown the SE application.
 
-Try again the `/greet/outbound` endpoint: http://localhost:8081/greet/outbound/jack. Now you should see
+Try again the `/greet/outbound` endpoint: http://localhost:8081/greet/outbound/Jack. Now you should see
  the **Failed** message instead of an internal server error.
 
-![](tutorial/images/23.fault.tolerance.png)
+![](tutorial/images/35.fallback.failed.png)
 
-If you have time you can check the failure in the Zipkin: http://localhost:9411/zipkin/
+If you have time you can check the failure when SE invocation is not happening or previous HTTP ERROR 500 in the Zipkin: http://localhost:9411/zipkin/
 
-![](tutorial/images/24.fault.zipkin.png)
+![](tutorial/images/36.fallback.zipkin.png)
 
 ### Step 11: Static content
 
 Helidon application can serve static content for example web page.
 So let's create a simple HTML page which invokes the `/greet` service and print the result.
 
-Create a `html` folder in the SE project under the `resources` folder. Create a new html file called `index.html` and copy the content below into the new file.
+First add
+
+To activate static content support first add the necessary dependency to the Maven project, `pom.xml`:
+```xml
+  <dependency>
+	    <groupId>io.helidon.webserver</groupId>
+	    <artifactId>helidon-webserver-static-content</artifactId>
+	</dependency>
+```
+![](tutorial/images/38.static.dependency.png)
+Save the `pom.xml`.
+
+Create a `static-content` folder in the SE project under the `resources` folder. Right click on the `resources` folder and select **New... -> Other.. -> General -> Folder**. Create a new html file called `index.html` and copy the content below into the new file. (Use right click on `static-content` folder and select **New... -> Other.. -> Web -> HTML File**)
 ```html
 <!DOCTYPE html>
 <html>
@@ -772,351 +922,25 @@ Create a `html` folder in the SE project under the `resources` folder. Create a 
 </body>
 </html>
 ```
-![](tutorial/images/25.static.html.png)
+![](tutorial/images/37.index.html.png)
 
-Register the static content folder in the router. Add the following line to router build in the `createRouting` method in the `Main.java`:
+
+
+Register the static content folder in the router. Add the following line to router builder in the `createRouting` method in the `Main.java`:
 ```java
-.register("/", StaticContentSupport.builder("/html"))
+.register("/", StaticContentSupport.builder("/static-content"))
+```
+Please pay attention to import the right `StaticContentSupport` class:
+```java
+import io.helidon.webserver.staticcontent.StaticContentSupport;
 ```
 
-![](tutorial/images/26.static.main.png)
+![](tutorial/images/39.static.routing.png)
 
 Save the changes and restart the SE application. Open http://localhost:8080/index.html in a browser. The html page invokes the `/greet` endpoint and prints the result.
 
-![](tutorial/images/27.static.result.png)
+![](tutorial/images/40.static.html.png)
 
 After the application test stop all your running Helidon applications.
-
-### Step 12: Build Native Image
-
-[GraalVM](https://www.graalvm.org/) is an open source, high-performance, polyglot virtual machine developed by Oracle Labs. GraalVM offers multiple features, including the ability to compile Java code ahead-of-time into a native executable binary. The binary can run natively on the operating system, without a Java runtime!
-
-A native executable offers important benefits, like shorter startup time and lower memory footprint. In addition, when a native executable runs within a container, the size of the container image is reduced (when compared with the same Java application running in a traditional JVM), because the container image doesn’t include a Java runtime. An optimized container size is critical for deploying apps to the cloud.
-
-Helidon supports two convenient GraalVM profiles:
-- The *local profile* is for users who have GraalVM installed locally and want to build a native executable for the same OS that they work on.
-- The *Docker profile* is for users who don’t have GraalVM installed locally or want to build native executable for Linux while using different OS locally.
-
-To build using the local profile you need to [download GraalVM](https://github.com/oracle/graal/releases), extract it to some folder on your computer and define *GRAALVM_HOME* environment variable pointing to it.
-
-If you use the provided VirtualBox image that already contains GraalVM. You have to setup the *GRAALVM_HOME* environment variable only.
-
-In this step you are going to use *local profile* to build native executable image.
-
-Open a terminal and change the directory to the workspace  directory:
-```bash
-cd /u01/workspace/
-```
-Create a new Helidon SE quickstart project:
-```bash
-mvn archetype:generate -DinteractiveMode=false \
-    -DarchetypeGroupId=io.helidon.archetypes \
-    -DarchetypeArtifactId=helidon-quickstart-se \
-    -DarchetypeVersion=1.2.0 \
-    -DgroupId=io.helidon.examples \
-    -DartifactId=helidon-quickstart-se \
-    -Dpackage=io.helidon.examples.quickstart.se
-```
-To see the startup time modify the *io.helidon.examples.quickstart.se.Main* class. Open the `/u01/content/helidon-quickstart-se/src/main/java/io/helidon/examples/quickstart/se/Main.java` file for edit using `gedit` or `vi`:
-```bash
-gedit /u01/content/helidon-quickstart-se/src/main/java/io/helidon/examples/quickstart/se/Main.java &
-```
-Modify the *startServer* method. Add variable as a first step to store the start time:
-```java
-long start = System.nanoTime();
-```
-Change the `System.out` log entry parameters to include the startup time calculation:
-```java
-System.out.println("WEB server is up in " + (System.nanoTime() - start)/1000000 + " ms! http://localhost:" + ws.port() + "/greet");
-```
-The complete *startServer* method should look like the following:
-```java
-static WebServer startServer() throws IOException {
-
-  long start = System.nanoTime();
-  // load logging configuration
-  LogManager.getLogManager().readConfiguration(
-          Main.class.getResourceAsStream("/logging.properties"));
-
-  // By default this will pick up application.yaml from the classpath
-  Config config = Config.create();
-
-  // Get webserver config from the "server" section of application.yaml
-  ServerConfiguration serverConfig =
-          ServerConfiguration.create(config.get("server"));
-
-  WebServer server = WebServer.create(serverConfig, createRouting(config));
-
-  // Try to start the server. If successful, print some info and arrange to
-  // print a message at shutdown. If unsuccessful, print the exception.
-  server.start()
-      .thenAccept(ws -> {
-          System.out.println(
-                  "WEB server is up in " + (System.nanoTime() - start)/1000000 + " ms! http://localhost:" + ws.port() + "/greet");
-          ws.whenShutdown().thenRun(()
-              -> System.out.println("WEB server is DOWN. Good bye!"));
-          })
-      .exceptionally(t -> {
-          System.err.println("Startup failed: " + t.getMessage());
-          t.printStackTrace(System.err);
-          return null;
-      });
-
-  // Server threads are not daemon. No need to block. Just react.
-
-  return server;
-}
-```
-Close the editor and set the environment variable in the terminal for the build:
-```bash
-export GRAALVM_HOME=/usr/lib/jvm/graalvm
-```
-Build the native executable binary:
-```bash
-cd /u01/content/helidon-quickstart-se
-mvn package -P native-image
-```
-This build may take some time. After the successful build first run the Java application few times.
-```bash
-$ java -jar target/helidon-quickstart-se.jar
-[DEBUG] (main) Using Console logging
-2019.08.27 16:15:00 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
-2019.08.27 16:15:00 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0xf9652460, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 1524 ms! http://localhost:8080/greet
-^C
-$ java -jar target/helidon-quickstart-se.jar
-[DEBUG] (main) Using Console logging
-2019.08.27 16:15:07 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
-2019.08.27 16:15:08 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0x86ba841f, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 1520 ms! http://localhost:8080/greet
-^C
-$ java -jar target/helidon-quickstart-se.jar
-[DEBUG] (main) Using Console logging
-2019.08.27 16:15:13 INFO io.helidon.webserver.NettyWebServer Thread[main,5,main]: Version: 1.2.0
-2019.08.27 16:15:13 INFO io.helidon.webserver.NettyWebServer Thread[nioEventLoopGroup-2-1,10,main]: Channel '@default' started: [id: 0x686e81ec, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 1737 ms! http://localhost:8080/greet
-```
-You can see the average startup time is around 1600ms from the above output. Obviously the speed highly depends on the desktop/laptop power.
-Now run the native executable image:
-```bash
-$ target/helidon-quickstart-se
-2019.08.27 16:23:05 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
-2019.08.27 16:23:05 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 7 ms! http://localhost:8080/greet
-^C
-$ target/helidon-quickstart-se
-2019.08.27 16:23:10 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
-2019.08.27 16:23:10 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 9 ms! http://localhost:8080/greet
-^C
-$ target/helidon-quickstart-se
-2019.08.27 16:23:12 INFO io.helidon.webserver.NettyWebServer !thread!: Version: 1.2.0
-2019.08.27 16:23:12 INFO io.helidon.webserver.NettyWebServer !thread!: Channel '@default' started: [id: 0xdbb45433, L:/0:0:0:0:0:0:0:0:8080]
-WEB server is up in 6 ms! http://localhost:8080/greet
-```
-In case of the native binary you have to see much better startup time. The output above shows 200X faster startup time which can be very useful for example at scaling or provide *Serverless* like service where the instance is not running continuously but only to fulfil the request.  
-
-### Step 13: Deploy to Kubernetes (OKE)
-
-This step is optional if you have OCI access and available OKE instance.
-
-You can also apply the step to any other Kubernetes environment.
-
-#### 13.1 Build the application Docker image
-
-Use again the terminal to build the Helidon SE application Docker image. Make sure you are in the Helidon SE project folder:
-```bash
-cd /u01/workspace/conference-se
-```
-First build the project again. You need to skip the tests during the build because you did modify the application but didn't adjusted the test cases:
-```bash
-mvn package -DskipTests
-```
-Create the Docker image. The `Dockerfile` generated and available in the project's root folder:
-```bash
-docker build -t conference-se:1.0 .
-```
-Test the container on your desktop:
-```bash
-docker run --rm -p 8080:8080 conference-se:1.0
-```
-You can check either using `curl http://localhost:8080/greet` command or opening the http://localhost:8080/index.html in a browser.
-
-Stop the running docker container in the terminal using `Ctrl+C`.
-
-#### 13.2 Get an Auth Token
-
-In a browser, go to the url you've been given to log in to Oracle Cloud Infrastructure. Specify tenancy, username and password and sign in.
-![](tutorial/images/30.oci-login-page.png)
-
-In the top-right corner of the Console, open the **User menu**, and then click **User Settings**.
-![](tutorial/images/31.oci-console-settings.png)
-
-On the **Auth Tokens** page, click **Generate Token**.
-![](tutorial/images/32.oci-auth-tokens.png)
-
-Enter *Tutorial auth token* as a friendly description for the auth token and click **Generate Token**. The new auth token is displayed. Copy the auth token immediately(!) to a secure location from where you can retrieve it later, because you won't see the auth token again in the Console.
-Close the Generate Token dialog.
-
-Confirm that you can access Oracle Cloud Infrastructure Registry.
-
-In the Console, open the navigation menu. Under **Solutions, Platform and Edge**, go to **Developer Services** and click **Registry**. Choose the region in which you will be working (for example, *us-phoenix-1*). Review the repositories that already exist. This tutorial assumes that no repositories have been created yet.
-![](tutorial/images/33.oci-registry-no-images.png)
-
-Note your registry name which is the tenancy's namespace. The tenancy namespace is an auto-generated random string of alphanumeric characters. For example on the screenshot above it is: *ansh81vru1zp*.
-You will need soon this.
-
-#### 13.3 Push the Docker image to the registry
-
-For the push you have to create a new image tag which reflects your repository.
-```bash
-docker tag conference-se:1.0 <REGION-CODE>.ocir.io/<TENANCY-NAMESPACE>/<REPO-NAME>:<TAG>
-```
-Where:
-
-- **REGION-CODE** is the code for the Oracle Cloud Infrastructure Registry region you're using. For example, *iad*. See the [Availability by Region Name and Region Code](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab) topic in the Oracle Cloud Infrastructure Registry documentation for the list of region codes.
-- **ocir.io** is the Oracle Cloud Infrastructure Registry name.
-- **TENANCY-NAMESPACE** is the registry name which is the tenancy's namespace. You had to note this in the previous step. The example is: *ansh81vru1zp*
-- **REPO-NAME** the name of a repository to which you want to push the image. If you are using shared OKE instance then the instructor will assign a repository name with unique number e.g. *conference-se01*. Otherwise choose a friendly name for example, *conference-se*.
-- **TAG**: version tag to identify the container packaged application.
-
-For example:
-```bash
-docker tag conference-se:1.0 iad.ocir.io/ansh81vru1zp/conference-se:1.0
-```
-Review the list of available images by entering:
-```bash
-$ docker images
-conference-se                                              1.0                                        842ca67fe519        34 minutes ago      210MB
-iad.ocir.io/ansh81vru1zp/conference-se                      1.0                                        842ca67fe519        34 minutes ago      210MB
-```
-To push to the registry you need to log in to Oracle Cloud Infrastructure Registry by entering:
-```bash
-docker login <region-code>.ocir.io
-```
-Where <region-code> is the code for the Oracle Cloud Infrastructure Registry region you're using. See above.
-
-When prompted, enter your username in the format `<tenancy-namespace>/<username>`. For example, `ansh81vru1zp/jdoe@acme.com`. When password is prompted, enter the auth token you copied earlier as the password.
-```bash
-$ docker login iad.ocir.io
-Username: ansh81vru1zp/jdoe@acme.com
-Password:
-Login Succeeded
-```
-
-As a last step to complete upload to registry, push the Docker image from the client machine to Oracle Cloud Infrastructure Registry by entering:
-```bash
-docker push <REGION-CODE>.ocir.io/<TENANCY-NAMESPACE>/conference-se:1.0
-```
-For example:
-```bash
-$ docker push iad.ocir.io/ansh81vru1zp/conference-se:1.0
-The push refers to repository [iad.ocir.io/ansh81vru1zp/conference-se]
-6b8227c1376a: Pushed
-4fb14fbcbea1: Pushed
-0703bce10b9c: Pushed
-cb510ec240d0: Pushed
-47da6bcc94ab: Pushed
-9c7455d26d36: Pushed
-93df8ce6d131: Pushed
-5dacd731af1b: Pushed
-1.0: digest: sha256:e6b62e8eed990aa7fc45a5919c489445940699dba41d7e68856d8fe452d41d5a size: 1991
-```
-
-In the browser window showing the Console with the Registry page displayed, click Reload.
-![](tutorial/images/34.oci-registry-image-check.png)
-Click the name of the `conference-se` repository that contains the image you just pushed. You see:
-The different images in the repository. In this case, there is only one image, with the tag `1.0`.
-
-#### 13.4 Deploy to OKE (Oracle **Kubernetes** Engine)
-
-In order to use your Kubernetes cluster you have to configure `kubectl` the client tool on your desktop. To do so follow the [Downloading a kubeconfig File to Enable Cluster Access](https://docs.cloud.oracle.com/iaas/Content/ContEng/Tasks/contengdownloadkubeconfigfile.htm) documentation or [this tutorial](https://github.com/nagypeter/weblogic-operator-tutorial/blob/master/tutorials/setup.oke.md#prepare-oci-cli-to-download-kubernetes-configuration-file).
-
-Create a namespace (for example, *helidon*) for the project. (If you use shared Kubernetes cluster the instructor will assign a unique namespace e.g. *helidon01*):
-```bash
-$ kubectl create namespace helidon
-namespace/helidon created
-```
-The repository that you created previously is private. To allow Kubernetes to authenticate with the container registry and pull the private image, you must create and use an image-pull secret:
-```bash
-kubectl create secret docker-registry \
-    ocirsecret \
-    --docker-server=<region-code>.ocir.io \
-    --docker-username='<tenancy-namespace>/<oci-username>' \
-    --docker-password='<oci-auth-token>' \
-    --docker-email='<email-address>' \
-    --namespace helidon
-```
-For example:
-```bash
-$ kubectl create secret docker-registry \
-    ocirsecret \
-    --docker-server=iad.ocir.io \
-    --docker-username='ansh81vru1zp/jdoe@acme.com' \
-    --docker-password='<oci-auth-token>' \
-    --docker-email='jdoe@acme.com' \
-    --namespace helidon
-secret/ocirsecret created
-```
-
-The project already contains a descriptor to deploy the application on Kubernetes. However it contains default image name what you have to modify before apply. Edit the `app.yaml` in the project root folder and add the following under `spec` in the `deployment` section. You have to add `imagePullSecrets` element including `- name: ocirsecret` value and also modify the `containers` element `image` property value to the image name created above. For example:
-
-```yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: conference-se
-  labels:
-    app: conference-se
-spec:
-  type: NodePort
-  selector:
-    app: conference-se
-  ports:
-  - port: 8080
-    targetPort: 8080
-    name: http
----
-kind: Deployment
-apiVersion: extensions/v1beta1
-metadata:
-  name: conference-se
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: conference-se
-        version: v1
-    spec:
-      imagePullSecrets:
-      - name: ocirsecret
-      containers:
-      - name: conference-se
-        image: iad.ocir.io/ansh81vru1zp/conference-se:1.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8080
----
-
-```
-Deploy the application:
-```bash
-kubectl create -f app.yaml -n helidon
-```
-Instead of setting up ingress for external access of the application simply use `kubectl` port forwarding to access to the application:
-```bash
-kubectl port-forward deployment/conference-se 7000:8080 -n helidon
-```
-In a different terminal window you can check the deployed application either using `curl http://localhost:7000/greet` command or opening the http://localhost:7000/index.html in a browser.
-
-![](tutorial/images/35.check-on-oke.png)
-
-Housekeeping. To delete Kubernetes deployment just delete the namespace:
-
-```bash
-$ kubectl delete namespace helidon
-namespace "helidon" deleted
-```
 
 Congratulate you completed Helidon SE and MP basics lab!
