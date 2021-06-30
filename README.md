@@ -7,7 +7,6 @@ On this hands on lab you will learn how to write Java microservices application 
 
 - Java 11+
 - Maven 3.6+
-- Docker 18+
 - Text editor or IDE to write and modify source code
 - Basic Java software development knowledge
 
@@ -101,11 +100,9 @@ Repeat the import steps for the MP project using the `/home/luna.user/workspace/
 
 > ##### Resolve helidon-quickstart-mp Jandex/Maven issue
 > If Eclipse shows error for *helidon-quickstart-mp* project then Click **Finish** and **OK** to skip warning.
-> To resolve the issue open the `pom.xml` in the *helidon-quickstart-mp* project and find the `<execution>` tag with red underline. Move the cursor above the tag and a recommendation dialog pops up. Select *Mark goal jandex as ignored in pom.xml*.
+> To resolve the issue open **Window->Preferences** and click **Maven->Errors/Warnings** and change notifications from *Error* to *Warning* when *Plugin execution not covered by lifecycle configuration*
 > ![](tutorial/images/03.eclipse.jandex.issue.png)
-> Confirm the recommended location and save the `pom.xml` to rebuild the project.
-> ![](tutorial/images/03.eclipse.jandex.ignore.place.png)
-> If the project still shows error then right-click on `pom.xml` and select **Maven -> Update Project...**
+> Click **Apply and Close** and click **OK** to update the project.
 
 Now the applications are imported and ready to develop.
 
