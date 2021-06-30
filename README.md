@@ -90,23 +90,24 @@ Launch Eclipse ![](tutorial/images/eclipse.icon.2.png) and during the startup de
 
 Close the *Welcome* window if you have and select **File->Import** menu item. In the import wizard dialog select **Maven->Existing Maven Projects** and click **Next**.
 
-![](tutorial/images/02.eclipse.import.png)
+<img src="tutorial/images/02.eclipse.import.png" width="500" style="display: block;margin-left: auto;margin-right: auto;"/>
+
 
 Select `/home/luna.user/workspace/helidon-quickstart-se` and click **Finish**.
 
-![](tutorial/images/03.select.project.dir.se.png)
+<img src="tutorial/images/03.select.project.dir.se.png" width="500" style="display: block;margin-left: auto;margin-right: auto;"/>
 
 Repeat the import steps for the MP project using the `/home/luna.user/workspace/helidon-quickstart-mp` folder.
 
 > ##### Resolve helidon-quickstart-mp Jandex/Maven issue
 > If Eclipse shows error for *helidon-quickstart-mp* project then Click **Finish** and **OK** to skip warning.
 > To resolve the issue open **Window->Preferences** and click **Maven->Errors/Warnings** and change notifications from *Error* to *Warning* when *Plugin execution not covered by lifecycle configuration*
-> ![](tutorial/images/03.eclipse.jandex.issue.png)
+> <img src="tutorial/images/03.eclipse.jandex.issue.png" width="500" style="display: block;margin-left: auto;margin-right: auto;"/>
 > Click **Apply and Close** and click **OK** to update the project.
 
 Now the applications are imported and ready to develop.
 
-![](tutorial/images/04.imported.projects.png)
+<img src="tutorial/images/04.imported.projects.png" width="500" style="display: block;margin-left: auto;margin-right: auto;"/>
 
 During the steps the Microprofile style `helidon-quickstart-mp` project hereafter referred to as *MP project* while the SE style `helidon-quickstart-se` project hereafter referred to as *SE project*.
 
