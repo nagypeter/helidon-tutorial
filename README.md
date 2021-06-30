@@ -90,8 +90,9 @@ Launch Eclipse ![](tutorial/images/eclipse.icon.2.png) and during the startup de
 
 Close the *Welcome* window if you have and select **File->Import** menu item. In the import wizard dialog select **Maven->Existing Maven Projects** and click **Next**.
 
-<img src="tutorial/images/02.eclipse.import.png" width="500" style="display: block;margin-left: auto;margin-right: auto;"/>
-
+<p align="center">
+<img src="tutorial/images/02.eclipse.import.png" width="500"/>
+</p>
 
 Select `/home/luna.user/workspace/helidon-quickstart-se` and click **Finish**.
 
