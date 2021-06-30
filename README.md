@@ -105,9 +105,7 @@ Repeat the import steps for the MP project using the `/home/luna.user/workspace/
 > ##### Resolve helidon-quickstart-mp Jandex/Maven issue
 > If Eclipse shows error for *helidon-quickstart-mp* project then Click **Finish** and **OK** to skip warning.
 > To resolve the issue open **Window->Preferences** and click **Maven->Errors/Warnings** and change notifications from *Error* to *Warning* when *Plugin execution not covered by lifecycle configuration*
-> <p align="center">
-<img src="tutorial/images/03.eclipse.jandex.issue.png" width="450"/>
-</p>
+> <p align="center"><img src="tutorial/images/03.eclipse.jandex.issue.png" width="450"/></p>
 > Click **Apply and Close** and click **OK** to update the project.
 
 Now the applications are imported and ready to develop.
