@@ -86,18 +86,20 @@ To build the applications you can use your favourite IDE or text editor. In this
 
 Launch Eclipse ![](tutorial/images/eclipse.icon.2.png) and during the startup define your workspace folder: `/home/luna.user/workspace` and click **Launch**.
 
-![](tutorial/images/01.eclipse.workspace.png)
+<p align="center">
+<img src="tutorial/images/01.eclipse.workspace.png" width="600"/>
+</p>
 
 Close the *Welcome* window if you have and select **File->Import** menu item. In the import wizard dialog select **Maven->Existing Maven Projects** and click **Next**.
 
 <p align="center">
-<img src="tutorial/images/02.eclipse.import.png" width="500"/>
+<img src="tutorial/images/02.eclipse.import.png" width="600"/>
 </p>
 
 Select `/home/luna.user/workspace/helidon-quickstart-se` and click **Finish**.
 
 <p align="center">
-<img src="tutorial/images/03.select.project.dir.se.png" width="500"/>
+<img src="tutorial/images/03.select.project.dir.se.png" width="600"/>
 </p>
 
 Repeat the import steps for the MP project using the `/home/luna.user/workspace/helidon-quickstart-mp` folder.
@@ -105,13 +107,13 @@ Repeat the import steps for the MP project using the `/home/luna.user/workspace/
 > ##### Resolve helidon-quickstart-mp Jandex/Maven issue
 > If Eclipse shows error for *helidon-quickstart-mp* project then Click **Finish** and **OK** to skip warning.
 > To resolve the issue open **Window->Preferences** and click **Maven->Errors/Warnings** and change notifications from *Error* to *Warning* when *Plugin execution not covered by lifecycle configuration*
-> <p align="center"><img src="tutorial/images/03.eclipse.jandex.issue.png" width="450"/></p>
+> <p align="center"><img src="tutorial/images/03.eclipse.jandex.issue.png" width="550"/></p>
 > Click **Apply and Close** and click **OK** to update the project.
 
 Now the applications are imported and ready to develop.
 
 <p align="center">
-<img src="tutorial/images/04.imported.projects.png" width="400"/>
+<img src="tutorial/images/04.imported.projects.png" width="500"/>
 </p>
 
 During the steps the Microprofile style `helidon-quickstart-mp` project hereafter referred to as *MP project* while the SE style `helidon-quickstart-se` project hereafter referred to as *SE project*.
@@ -201,12 +203,12 @@ First for MP project create the `mp-config.yaml` config file in the resources fo
 
 Select **General->File** and click **Next**.
 <p align="center">
-<img src="tutorial/images/10.create.file.png" width="500"/>
+<img src="tutorial/images/10.create.file.png" width="600"/>
 </p>
 
 Type `mp-config.yaml` as name.
   <p align="center">
-  <img src="tutorial/images/11.create.file.name.png" width="500"/>
+  <img src="tutorial/images/11.create.file.name.png" width="600"/>
   </p>
 
 Copy the following content into the new file and save.
@@ -245,7 +247,7 @@ The `Main.java` should be similar:
 
 Run the MP application using `Main.java` and check the result at: [http://localhost:8081/greet](http://localhost:8081/greet)
 <p align="center">
-<img src="tutorial/images/13.mp.config.result.png" width="500"/>
+<img src="tutorial/images/13.mp.config.result.png" width="600"/>
 </p>
 
 Modify the greeting configuration without stopping the application in the `mp-config.yaml` file:
@@ -253,7 +255,7 @@ Modify the greeting configuration without stopping the application in the `mp-co
 
 Check the runtime changes in the browser.
 <p align="center">
-<img src="tutorial/images/15.mp.config.change.result.png" width="500"/>
+<img src="tutorial/images/15.mp.config.change.result.png" width="600"/>
 </p>
 
 Now modify the SE application but here register polling to watch config file changes. Due to the polling the application will pick up the configuration changes in the file without the application restart. However this requires external configuration file.
@@ -492,6 +494,7 @@ private void getDefaultMessageHandler(ServerRequest request,
 }
 ```
 ![](tutorial/images/19.se.custom.metrics.png)
+
 Save the changes. Stop the SE application if necessary and run again using `Main.java` in SE project.
 
 After hitting few times the http://localhost:8080/greet/ check the metrics at http://localhost:8080/metrics/application/my-se-metrics:
@@ -746,6 +749,7 @@ interface GreetRestClient {
 }
 ```
 By calling `GreetRestClient.getMessage()` you reach the endpoint of the SE application.
+
 ![](tutorial/images/24.mp.rest.client.interface.png)
 
 Once a rest client interface is annotated, it can be injected into any CDI bean. Open `GreetResource.java` and add the following part example after the last method:
@@ -762,7 +766,9 @@ public JsonObject outbound(@PathParam("name") String name) {
 ```
 This part injects the interface and define `/outbound/{name}` endpoint for MP application to invoke the REST call to the SE application.
 Usually the member declaration happens before the method(s) declaration but for easier understanding just copy together after the last method.
+
 ![](tutorial/images/25.mp.rest.client.inject.png)
+
 Save the changes, restart the MP application and test the outbound call: http://localhost:8081/greet/outbound/Jack:
 ```bash
 {"message":"Hello Helidon SE from YAML config 2 J ack!"}
@@ -787,6 +793,7 @@ To activate tracing in SE application first add necessary libraries (dependencie
 </dependency>
 ```
 ![](tutorial/images/26.se.tracin.pom.png)
+
 Save the `pom.xml`.
 
 In quickstart project the tracer is not registered in the webserver. To do so open the `Main.java` and find `startServer` method and add the following line in the builder part:
@@ -802,6 +809,7 @@ WebServer server = WebServer.builder(createRouting(config))
         .build();
 ```
 ![](tutorial/images/27.se.tracer.main.png)
+
 Save the `Main.java` class.
 
 Finally open the `application.yaml` configuration file and add tracing configuration element. It is enough to just set a name for the tracing service what will be displayed for this application in Zipkin. The other parameters can be default.
@@ -810,7 +818,7 @@ tracing:
   service: helidon-se
 ```
 <p align="center">
-<img src="tutorial/images/28.se.tracer.config.png" width="550"/>
+<img src="tutorial/images/28.se.tracer.config.png" width="650"/>
 </p>
 Save the `application.yaml` and restart the SE application.
 
@@ -825,6 +833,7 @@ To switch on the tracing in MP application add only the Zipkin tracing dependenc
 </dependency>
 ```
 ![](tutorial/images/29.mp.tracer.pom.png)
+
 Save the changes.
 
 Configure the service name here too in the `microprofile-config.properties` property file which is located under `src/main/resources/META-INF` folder. Add the following property:
@@ -832,6 +841,7 @@ Configure the service name here too in the `microprofile-config.properties` prop
 tracing.service=helidon-mp
 ```
 ![](tutorial/images/30.mp.tracer.config.png)
+
 Save changes and restart the MP application.
 
 #### Start Zipkin and monitor applications
@@ -854,6 +864,7 @@ Now open Zipkin to see the tracing information: http://localhost:9411/zipkin/ an
 ![](tutorial/images/31.zipkin.find.trace.png)
 
 There you can see the detailed tracing result where both services are involved.
+
 ![](tutorial/images/32.zipkin.details.png)
 
 ### Step 10: Fault Tolerance
@@ -887,7 +898,7 @@ Try again the `/greet/outbound` endpoint: http://localhost:8081/greet/outbound/J
  the **Failed** message instead of an internal server error.
 
 <p align="center">
-<img src="tutorial/images/35.fallback.failed.png" width="500"/>
+<img src="tutorial/images/35.fallback.failed.png" width="600"/>
 </p>
 
 If you have time you can check the failure when SE invocation is not happening or previous HTTP ERROR 500 in the Zipkin: http://localhost:9411/zipkin/
@@ -909,6 +920,7 @@ To activate static content support first add the necessary dependency to the Mav
 	</dependency>
 ```
 ![](tutorial/images/38.static.dependency.png)
+
 Save the `pom.xml`.
 
 Create a `static-content` folder in the SE project under the `resources` folder. Right click on the `resources` folder and select **New... -> Other.. -> General -> Folder**. Create a new html file called `index.html` and copy the content below into the new file. (Use right click on `static-content` folder and select **New... -> Other.. -> Web -> HTML File**)
@@ -953,7 +965,7 @@ import io.helidon.webserver.staticcontent.StaticContentSupport;
 
 Save the changes and restart the SE application. Open http://localhost:8080/index.html in a browser. The html page invokes the `/greet` endpoint and prints the result.
 <p align="center">
-<img src="tutorial/images/40.static.html.png" width="550"/>
+<img src="tutorial/images/40.static.html.png" width="650"/>
 </p>
 
 After the application test stop all your running Helidon applications.
