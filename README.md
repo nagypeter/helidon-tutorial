@@ -217,7 +217,7 @@ app:
  greeting: "Hello Helidon MP from YAML config"
 ```
 
-In the MP project open the `io.helidon.examples.conference.mp.Main` class and add a new `buildConfig` method which reads the new config file.
+In the MP project open the `io.helidon.examples.quickstart.mp.Main` class and add a new `buildConfig` method which reads the new config file.
 ```java
 private static Config buildConfig() {
     return Config.builder()
@@ -258,7 +258,7 @@ Copy the following content and save:
 ```bash
 app.greeting=Hello Helidon SE
 ```
-In the SE project open the `io.helidon.examples.conference.se.Main` class and add a new `buildConfig` method which reads the new config file and register the polling. If you have different file location then don't forget to modify the path in the snippet below.
+In the SE project open the `io.helidon.examples.quickstart.se.Main` class and add a new `buildConfig` method which reads the new config file and register the polling. If you have different file location then don't forget to modify the path in the snippet below.
 
 ```java
 private static Config buildConfig() {
