@@ -250,15 +250,7 @@ Run the MP application using `Main.java` and check the result at: [http://localh
 <img src="tutorial/images/13.mp.config.result.png" width="600"/>
 </p>
 
-Modify the greeting configuration without stopping the application in the `mp-config.yaml` file:
-![](tutorial/images/14.mp.config.change.png)
-
-Check the runtime changes in the browser.
-<p align="center">
-<img src="tutorial/images/15.mp.config.change.result.png" width="600"/>
-</p>
-
-Now modify the SE application but here register polling to watch config file changes. Due to the polling the application will pick up the configuration changes in the file without the application restart. However this requires external configuration file.
+Now modify the SE application, but here register polling to watch config file changes. Due to the polling the application will pick up the configuration changes in the file without the application restart. However this requires external configuration file.
 
 Create the `se-config.properties` config file in the SE project `resources` folder. In the SE project right click on `src/main/resources` and select **New->Other...** than select **General->File** and click **Next**. Type `mp-config.yaml` as name.
 
@@ -303,7 +295,7 @@ The `Main.java` should look like similar:
 To reflect the runtime config changes modify the `io.helidon.examples.quickstart.se.GreetService` class.
 Open the class and instead of the `private final AtomicReference<String> greeting = new AtomicReference<>();` add a new member to store the value:
 ```java
-private final Supplier<String> greetingSupplier;
+private Supplier<String> greetingSupplier;
 ```
 Modify the constructor `GreetService` method to set supplier instead of the `greeting` member.
 ```java
@@ -771,7 +763,7 @@ Usually the member declaration happens before the method(s) declaration but for 
 
 Save the changes, restart the MP application and test the outbound call: http://localhost:8081/greet/outbound/Jack:
 ```bash
-{"message":"Hello Helidon SE from YAML config 2 J ack!"}
+{"message":"Hello Helidon SE from YAML config 2 Jack!"}
 ```
 You have to see the SE application's message including the name appended to the outbound path as parameter.
 
